@@ -181,26 +181,21 @@
         }
       };
 
+      D3BarChart.prototype.postRender = function() {
+        var _ref;
+        return (_ref = this.options.postRender) != null ? _ref.call(this) : void 0;
+      };
+
+      D3BarChart.prototype.getXScale = function() {
+        var data, len_x, max_x, min_x;
+        data = this._data;
+        len_x = data[0].length;
+        min_x = data[0][0].x;
+        max_x = data[0][len_x - 1].x;
+        return d3.scale.ordinal().domain(d3.range(min_x, max_x + 1)).rangeRoundBands([0, this.options.plot_box.w], 0.1, 0.1);
+      };
+
       /*
-      
-          postRender: function(){
-            if (this.options.postRender) {
-              this.options.postRender.call(this);
-            }
-          },
-      
-          getXScale: function(){
-            // TODO this makes a lot of assumptions about how the input data is
-            // structured and ordered, replace with d3.extent
-            var self = this,
-                data = this._data;
-            var len_x = data[0].length,
-                min_x = data[0][0].x,
-                max_x = data[0][len_x - 1].x;
-            return d3.scale.ordinal()
-                .domain(d3.range(min_x, max_x + 1))
-                .rangeRoundBands([0, self.options.plot_box.w], 0.1, 0.1);
-          },
       
           getYDomain: function(){
              return [0, this.getMaxY(this._data)];
