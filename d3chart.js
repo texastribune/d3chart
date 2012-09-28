@@ -279,46 +279,32 @@
         return "" + i;
       };
 
+      D3BarChart.prototype.renderLegend = function(el) {
+        var items, legendStackOrder, self, _ref;
+        self = this;
+        if (el.jquery) {
+          this.$legend = el;
+          this.legend = el[0];
+        } else if (typeof el === "string") {
+          this.legend = document.getElementById(el);
+        } else {
+          this.legend = el;
+        }
+        legendStackOrder = (_ref = self.options.legend.stackOrder === "btt") != null ? _ref : {
+          ":first-child": null
+        };
+        items = d3.select(this.legend).append("ul").attr("class", "nav nav-pills nav-stacked").selectAll("li").data(this._data).enter().insert("li", legendStackOrder).attr('class', 'inactive').append('a').attr("href", "#");
+        items.append("span").attr("class", "legend-key").html("&#9608;").style("color", this.layerFillStyle);
+        items.append("span").attr("class", "legend-value").text(self.getLegendSeriesTitle);
+        items.on("click", function(d, i) {
+          var _base;
+          d3.event.preventDefault();
+          return typeof (_base = self.options.legend).click === "function" ? _base.click(d, i, this) : void 0;
+        });
+        return this;
+      };
+
       /*
-          renderLegend: function(el){
-            var self = this;
-            if (el.jquery) {  // todo what about things like zepto?
-              this.$legend = el;
-              this.legend = el[0];
-            } else if (typeof el == "string"){
-              this.legend = document.getElementById(el);
-            } else {
-              this.legend = el;
-            }
-            // use null to make insert behave like append
-            //   doc source: https://github.com/mbostock/d3/wiki/Selections#wiki-insert
-            //   null convention source: http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#ID-952280727
-            var legendStackOrder = self.options.legend.stackOrder == "btt" ? ":first-child" : null;
-            var items = d3.select(this.legend).append("ul")
-              .attr("class", "nav nav-pills nav-stacked")
-              .selectAll("li")
-                .data(this._data)
-                // bars are built bottom-up, so build the legend the same way
-                .enter()
-                  .insert("li", legendStackOrder)
-                    .attr('class', 'inactive')
-                    .append('a').attr("href", "#");
-            items
-              .append("span").attr("class", "legend-key")
-              // TODO use an element that can be controlled with CSS better but is also printable
-              .html("&#9608;").style("color", this.layerFillStyle);
-            items
-              .append("span").attr("class", "legend-value")
-              .text(self.getLegendSeriesTitle);
-            // events
-            items.on("click", function(d, i){
-              d3.event.preventDefault();
-              if (self.legendActivateSeries){
-                self.legendActivateSeries(i, this);
-              }
-            });
-          },
-      
           postRenderLegend: function(el){
             if (this.options.legend.postRenderLegend) {
               this.options.legend.postRenderLegend.call(this, el);
