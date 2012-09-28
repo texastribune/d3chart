@@ -199,29 +199,19 @@
         return [0, this.getMaxY(this._data)];
       };
 
+      D3BarChart.prototype.refresh = function() {
+        this.rescale(this.getYDomain());
+        this._layers.data(this._data);
+        this._layers.selectAll("rect.bar").data(function(d) {
+          return d;
+        }).transition().attr("y", this.y).attr("height", this.h);
+        if (this.yAxis) {
+          this.svg.select('.y.axis').transition().call(this.yAxis);
+        }
+        return this;
+      };
+
       /*
-          refresh: function(){
-            var self = this,
-                data = self._data;
-      
-            // reset height ceiling
-            self.rescale(self.getYDomain());
-      
-            // update layers data
-            self._layers.data(data);
-            // update bars data :(
-            self._layers.selectAll("rect.bar")
-              .data(function(d) { return d; })
-              .transition()
-                .attr("y", self.y)
-                .attr("height", self.h);
-      
-            if (self.yAxis){
-              self.svg.select('.y.axis').transition().call(self.yAxis);
-            }
-            return this;
-          },
-      
           getMaxY: function(data){
             return d3.max(data, function(d) {
               return d3.max(d, function(d) {

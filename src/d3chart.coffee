@@ -220,29 +220,26 @@ do ($=jQuery, d3=d3, tt=tt, exports=window) ->
 
     getYDomain: () -> [0, @getMaxY(@_data)]
 
-    ###
-    refresh: function(){
-      var self = this,
-          data = self._data;
+    refresh: () ->
+      # reset height ceiling
+      @rescale(@getYDomain())
 
-      // reset height ceiling
-      self.rescale(self.getYDomain());
+      # update layers data
+      @_layers.data(@_data)
 
-      // update layers data
-      self._layers.data(data);
-      // update bars data :(
-      self._layers.selectAll("rect.bar")
-        .data(function(d) { return d; })
+      # update bars data :(
+      @_layers.selectAll("rect.bar")
+        .data((d) -> d)
         .transition()
-          .attr("y", self.y)
-          .attr("height", self.h);
+          .attr("y", @y)
+          .attr("height", @h)
 
-      if (self.yAxis){
-        self.svg.select('.y.axis').transition().call(self.yAxis);
-      }
-      return this;
-    },
+      if @yAxis
+        @svg.select('.y.axis').transition().call(@yAxis)
 
+      @
+
+    ###
     getMaxY: function(data){
       return d3.max(data, function(d) {
         return d3.max(d, function(d) {
