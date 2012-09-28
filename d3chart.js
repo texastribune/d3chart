@@ -227,12 +227,15 @@
         };
       };
 
+      D3BarChart.prototype.getX = function() {
+        var self;
+        self = this;
+        return function(d) {
+          return self.x_scale(d.x);
+        };
+      };
+
       /*
-          getX: function(){
-            var self = this;
-            return function(d) { return self.x_scale(d.x); };
-          },
-      
           getY: function(){
             var self = this;
             return function(d) { return self.y_scale(d.y); };

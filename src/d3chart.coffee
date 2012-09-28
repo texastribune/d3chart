@@ -248,12 +248,11 @@ do ($=jQuery, d3=d3, tt=tt, exports=window) ->
       self = this
       return (d, i) -> return self.options.color(i)
 
-    ###
-    getX: function(){
-      var self = this;
-      return function(d) { return self.x_scale(d.x); };
-    },
+    getX: () ->
+      self = this
+      return (d) -> self.x_scale(d.x)
 
+    ###
     getY: function(){
       var self = this;
       return function(d) { return self.y_scale(d.y); };
