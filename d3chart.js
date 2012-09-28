@@ -3,7 +3,7 @@
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  (function($, d3, tt, exports) {
+  (function($, d3, exports) {
     var D3BarChart, D3Chart, D3GroupedBarChart, D3StackedBarChart, defaultOptions;
     defaultOptions = {
       color: d3.scale.category10(),
@@ -379,6 +379,6 @@
 
     })(D3BarChart);
     return "";
-  })(jQuery, d3, tt, window);
+  })(jQuery, d3, window);
 
 }).call(this);

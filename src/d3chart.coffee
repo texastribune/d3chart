@@ -1,4 +1,4 @@
-do ($=jQuery, d3=d3, tt=tt, exports=window) ->
+do ($=jQuery, d3=d3, exports=window) ->
 
   # CONFIGURATION
   # these are the available options
