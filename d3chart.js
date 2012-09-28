@@ -4,7 +4,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   (function($, d3, tt, exports) {
-    var D3BarChart, D3Chart, D3StackedBarChart, defaultOptions;
+    var D3BarChart, D3Chart, D3GroupedBarChart, D3StackedBarChart, defaultOptions;
     defaultOptions = {
       color: d3.scale.category10(),
       height: 300,
@@ -346,46 +346,39 @@
       return D3StackedBarChart;
 
     })(D3BarChart);
+    exports.D3GroupedBarChart = D3GroupedBarChart = (function(_super) {
+
+      __extends(D3GroupedBarChart, _super);
+
+      function D3GroupedBarChart() {
+        return D3GroupedBarChart.__super__.constructor.apply(this, arguments);
+      }
+
+      D3GroupedBarChart.prototype.getLayers = function() {
+        var layers, self;
+        self = this;
+        layers = self.plot.selectAll("g.layer").data(this._data).enter().append("g").attr("class", "layer").style("fill", self.layerFillStyle);
+        return layers.attr("transform", function(d, i) {
+          return "translate(" + (self.getLayerOffset(i)) + ",0)";
+        });
+      };
+
+      D3GroupedBarChart.prototype.getLayerOffset = function(i) {
+        return this.bar_width * 0.9 * i;
+      };
+
+      D3GroupedBarChart.prototype.getBarWidth = function() {
+        var bar_width, len_series, len_x;
+        len_x = this.x_scale.range().length;
+        bar_width = this.options.plot_box.w / len_x;
+        len_series = this._data.length;
+        return bar_width / len_series;
+      };
+
+      return D3GroupedBarChart;
+
+    })(D3BarChart);
     return "";
   })(jQuery, d3, tt, window);
-
-  
-
-
-  /***************** GROUPED BAR CHART ******************/
-  var D3GroupedBarChart = exports.D3GroupedBarChart = D3BarChart.extend({
-
-    getLayers: function(){
-      // set up a layer for each series
-      var self = this;
-      var layers = self.plot.selectAll("g.layer")
-        .data(this._data)
-        .enter().append("g")
-          .attr("class", "layer")
-          .style("fill", self.layerFillStyle);
-      // shift grouped bars so they're adjacent to each other
-      layers
-        .attr("transform", function(d, i) {
-          return "translate(" + self.getLayerOffset(i) + ",0)";
-        });
-      return layers;
-    },
-
-    getLayerOffset: function(i) {
-      return this.bar_width * 0.9 * i;
-    },
-
-    getBarWidth: function(){
-      // TODO replace with super
-      var len_x = this.x_scale.range().length;
-      var bar_width = this.options.plot_box.w / len_x;  // bar_width is an outer width
-
-      var len_series = this._data.length;  // m, i, rows
-      return bar_width / len_series;  // sub-divide
-    }
-  });
-
-  ;
-
 
 }).call(this);

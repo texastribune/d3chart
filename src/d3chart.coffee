@@ -26,9 +26,9 @@ do ($=jQuery, d3=d3, tt=tt, exports=window) ->
       enabled: false
       element: undefined  # required an existing DOM element
       stackOrder: "btt"  # bottom to top (btt), or top to bottom (ttb)
-      # events
-      # click: (d, i, this) ->
-      # postRenderLegend: (legend.element)
+      # OPTIONAL EVENTS
+      #   click: (d, i, this) ->
+      #   postRenderLegend: (legend.element)
 
 
   # data processor
@@ -361,41 +361,31 @@ do ($=jQuery, d3=d3, tt=tt, exports=window) ->
       (d) -> self.y_scale(d.y + d.y0)
 
 
-  ""
-`
+  #***************** GROUPED BAR CHART ******************/
+  exports.D3GroupedBarChart = class D3GroupedBarChart extends D3BarChart
 
-
-  /***************** GROUPED BAR CHART ******************/
-  var D3GroupedBarChart = exports.D3GroupedBarChart = D3BarChart.extend({
-
-    getLayers: function(){
-      // set up a layer for each series
-      var self = this;
-      var layers = self.plot.selectAll("g.layer")
+    getLayers: () ->
+      self = this;
+      layers = self.plot.selectAll("g.layer")
         .data(this._data)
         .enter().append("g")
           .attr("class", "layer")
           .style("fill", self.layerFillStyle);
-      // shift grouped bars so they're adjacent to each other
+      # shift grouped bars so they're adjacent to each other
       layers
-        .attr("transform", function(d, i) {
-          return "translate(" + self.getLayerOffset(i) + ",0)";
-        });
-      return layers;
-    },
+        .attr("transform", (d, i) ->
+          "translate(#{self.getLayerOffset(i)},0)";
+        )
 
-    getLayerOffset: function(i) {
-      return this.bar_width * 0.9 * i;
-    },
+    getLayerOffset: (i) -> @bar_width * 0.9 * i
 
-    getBarWidth: function(){
-      // TODO replace with super
-      var len_x = this.x_scale.range().length;
-      var bar_width = this.options.plot_box.w / len_x;  // bar_width is an outer width
+    getBarWidth: () ->
+      # TODO replace with super
+      len_x = this.x_scale.range().length
+      bar_width = this.options.plot_box.w / len_x  # bar_width is an outer width
 
-      var len_series = this._data.length;  // m, i, rows
-      return bar_width / len_series;  // sub-divide
-    }
-  });
+      len_series = this._data.length  # m, i, rows
+      bar_width / len_series  # sub-divide
 
-  `
+  # The End
+  ""
