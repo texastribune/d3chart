@@ -2,7 +2,7 @@
 (function() {
 
   (function($, d3, tt, exports) {
-    var defaultOptions;
+    var D3Chart, defaultOptions;
     defaultOptions = {
       color: d3.scale.category10(),
       height: 300,
@@ -49,43 +49,42 @@
       }
       return data;
     };
+    exports.D3Chart = D3Chart = (function() {
+
+      function D3Chart() {}
+
+      D3Chart.prototype.initData = function(data) {
+        return data;
+      };
+
+      D3Chart.prototype.data = function(new_data) {
+        if (new_data != null) {
+          this._data = this.initData(new_data);
+          this.refresh();
+          return this;
+        }
+        return this._data;
+      };
+
+      D3Chart.prototype.refresh = function() {
+        return this;
+      };
+
+      D3Chart.prototype.option = function(name, newvalue) {
+        if (newvalue != null) {
+          this.options[name] = newvalue;
+          return this;
+        }
+        return this.options[name];
+      };
+
+      return D3Chart;
+
+    })();
     return "";
   })(jQuery, d3, tt, window);
 
   
-  /***************** CHART ******************/
-  var D3Chart = exports.D3Chart = tt.Class.extend({
-    // override this if data needs to be scrubbed before getting charted
-    initData: function(data){ return data; },
-
-    // get or set data
-    data: function(new_data){
-      var data;
-      if (typeof new_data === "undefined"){
-        return this._data;
-      }
-
-      this._data = this.initData(new_data);
-      this.refresh();
-      return this;
-    },
-
-    // get or set data
-    refresh: function(){
-      return this;
-    },
-
-    // get or set option
-    option: function(name, newvalue){
-      if (typeof newvalue === "undefined"){
-        return this.options[name];
-      }
-      this.options[name] = newvalue;
-      return this;
-    }
-
-  });
-
 
   /***************** BAR CHART ******************/
   var D3BarChart = exports.D3BarChart = D3Chart.extend({

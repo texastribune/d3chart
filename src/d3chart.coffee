@@ -42,41 +42,32 @@ do ($=jQuery, d3=d3, tt=tt, exports=window) ->
         set_j.y *= factor / max_value * 100
     data;
 
+
+  exports.D3Chart = class D3Chart
+    # override @initData if data needs to be scrubbed before getting charted
+    initData: (data) -> data
+
+    # get or set data
+    data: (new_data) ->
+      if new_data?
+        @_data = @initData(new_data)
+        @refresh()
+        return @
+      @_data
+
+    # get or set data
+    refresh: () -> @
+
+    # get or set option
+    option: (name, newvalue) ->
+      if newvalue?
+        @options[name] = newvalue;
+        return @
+      @options[name]
+
+
   ""
 `
-  /***************** CHART ******************/
-  var D3Chart = exports.D3Chart = tt.Class.extend({
-    // override this if data needs to be scrubbed before getting charted
-    initData: function(data){ return data; },
-
-    // get or set data
-    data: function(new_data){
-      var data;
-      if (typeof new_data === "undefined"){
-        return this._data;
-      }
-
-      this._data = this.initData(new_data);
-      this.refresh();
-      return this;
-    },
-
-    // get or set data
-    refresh: function(){
-      return this;
-    },
-
-    // get or set option
-    option: function(name, newvalue){
-      if (typeof newvalue === "undefined"){
-        return this.options[name];
-      }
-      this.options[name] = newvalue;
-      return this;
-    }
-
-  });
-
 
   /***************** BAR CHART ******************/
   var D3BarChart = exports.D3BarChart = D3Chart.extend({
