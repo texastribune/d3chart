@@ -251,14 +251,13 @@
         };
       };
 
+      D3BarChart.prototype.rescale = function(extent) {
+        this.height_scale.domain([0, extent[1] - extent[0]]);
+        this.y_scale.domain(extent);
+        return this;
+      };
+
       /*
-          rescale: function(extent){
-            // TODO get rid of this method
-            this.height_scale.domain([0, extent[1] - extent[0]]);
-            this.y_scale.domain(extent);
-            return this;
-          },
-      
           getLayers: function(){
             // set up a layer for each series
             var self = this;
