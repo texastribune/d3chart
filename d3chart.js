@@ -257,18 +257,11 @@
         return this;
       };
 
+      D3BarChart.prototype.getLayers = function() {
+        return this.plot.selectAll("g.layer").data(this._data).enter().append("g").attr("class", "layer").style("fill", this.layerFillStyle);
+      };
+
       /*
-          getLayers: function(){
-            // set up a layer for each series
-            var self = this;
-            var layers = self.plot.selectAll("g.layer")
-              .data(this._data)
-              .enter().append("g")
-                .attr("class", "layer")
-                .style("fill", self.layerFillStyle);
-            return layers;
-          },
-      
           // setup a bar for each point in a series
           getBars: function(){
             var self = this;

@@ -265,18 +265,15 @@ do ($=jQuery, d3=d3, tt=tt, exports=window) ->
       @y_scale.domain(extent)
       return @
 
-    ###
-    getLayers: function(){
-      // set up a layer for each series
-      var self = this;
-      var layers = self.plot.selectAll("g.layer")
-        .data(this._data)
+    # set up a layer for each series
+    getLayers: () ->
+      @plot.selectAll("g.layer")
+        .data(@_data)
         .enter().append("g")
           .attr("class", "layer")
-          .style("fill", self.layerFillStyle);
-      return layers;
-    },
+          .style("fill", @layerFillStyle)
 
+    ###
     // setup a bar for each point in a series
     getBars: function(){
       var self = this;
