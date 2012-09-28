@@ -135,12 +135,12 @@
         };
         self.options.plot_box = plot_box;
         self.layerFillStyle = self.getLayerFillStyle();
-        this.x_scale = self.getXScale();
-        self.x_axis = null;
+        this.xScale = self.getXScale();
+        self.XAxis = null;
         self.x = self.getX();
         self.height_scale = d3.scale.linear().range([0, plot_box.h]);
-        self.y_scale = d3.scale.linear().range([plot_box.h, 0]);
-        self.y_axis = null;
+        self.yScale = d3.scale.linear().range([plot_box.h, 0]);
+        self.yAxis = null;
         self.y = self.getY();
         self.h = self.getH();
         return self.bar_width = this.getBarWidth();
@@ -163,17 +163,17 @@
           }
         });
         if (self.options.xAxis.enabled) {
-          this.xAxis = d3.svg.axis().orient("bottom").scale(self.x_scale).tickSize(6, 1, 1).tickFormat(function(a) {
+          this.xAxis = d3.svg.axis().orient("bottom").scale(self.xScale).tickSize(6, 1, 1).tickFormat(function(a) {
             return a;
           });
-          svg.append("g").attr("class", "x axis").attr("title", self.options.xAxis.title).attr("transform", ("translate(" + self.options.margin.left + ",") + (self.options.height - self.options.margin.bottom) + ")").call(x_axis);
+          svg.append("g").attr("class", "x axis").attr("title", self.options.xAxis.title).attr("transform", ("translate(" + self.options.margin.left + ",") + (self.options.height - self.options.margin.bottom) + ")").call(XAxis);
         }
         if (self.options.yAxis.enabled) {
-          this.yAxis = d3.svg.axis().scale(self.y_scale).orient("left");
+          this.yAxis = d3.svg.axis().scale(self.yScale).orient("left");
           if (self.options.yAxis.tickFormat) {
-            y_axis.tickFormat(self.options.yAxis.tickFormat);
+            yAxis.tickFormat(self.options.yAxis.tickFormat);
           }
-          svg.append("g").attr("class", "y axis").attr("title", self.options.yAxis.title).attr("transform", "translate(" + self.options.margin.left + "," + self.options.margin.top + ")").call(y_axis);
+          svg.append("g").attr("class", "y axis").attr("title", self.options.yAxis.title).attr("transform", "translate(" + self.options.margin.left + ", " + self.options.margin.top + ")").call(yAxis);
         }
         if (this.options.legend.enabled) {
           this.renderLegend(self.options.legend.elem);
@@ -231,7 +231,7 @@
         var self;
         self = this;
         return function(d) {
-          return self.x_scale(d.x);
+          return self.xScale(d.x);
         };
       };
 
@@ -239,7 +239,7 @@
         var self;
         self = this;
         return function(d) {
-          return self.y_scale(d.y);
+          return self.yScale(d.y);
         };
       };
 
@@ -253,7 +253,7 @@
 
       D3BarChart.prototype.rescale = function(extent) {
         this.height_scale.domain([0, extent[1] - extent[0]]);
-        this.y_scale.domain(extent);
+        this.yScale.domain(extent);
         return this;
       };
 
@@ -271,7 +271,7 @@
 
       D3BarChart.prototype.getBarWidth = function() {
         var len_x;
-        len_x = this.x_scale.range().length;
+        len_x = this.xScale.range().length;
         return this.options.plot_box.w / len_x;
       };
 
@@ -339,7 +339,7 @@
         var self;
         self = this;
         return function(d) {
-          return self.y_scale(d.y + d.y0);
+          return self.yScale(d.y + d.y0);
         };
       };
 
@@ -369,7 +369,7 @@
 
       D3GroupedBarChart.prototype.getBarWidth = function() {
         var bar_width, len_series, len_x;
-        len_x = this.x_scale.range().length;
+        len_x = this.xScale.range().length;
         bar_width = this.options.plot_box.w / len_x;
         len_series = this._data.length;
         return bar_width / len_series;

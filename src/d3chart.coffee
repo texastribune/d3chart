@@ -69,7 +69,8 @@ do ($=jQuery, d3=d3, exports=window) ->
       @options[name]
 
 
-  #***************** BAR CHART ******************/
+  ################################ BAR CHART ###################################
+
   exports.D3BarChart = class D3BarChart extends D3Chart
     constructor: (el, data, options) ->
       # TODO move into super
@@ -126,14 +127,14 @@ do ($=jQuery, d3=d3, exports=window) ->
       self.layerFillStyle = self.getLayerFillStyle()
 
       # setup x scales
-      this.x_scale = self.getXScale()
-      self.x_axis = null
+      this.xScale = self.getXScale()
+      self.XAxis = null
       self.x = self.getX()
 
       # setup y scales
       self.height_scale = d3.scale.linear().range([0, plot_box.h])
-      self.y_scale = d3.scale.linear().range([plot_box.h, 0])
-      self.y_axis = null
+      self.yScale = d3.scale.linear().range([plot_box.h, 0])
+      self.yAxis = null
       self.y = self.getY()
       self.h = self.getH()
 
@@ -181,32 +182,34 @@ do ($=jQuery, d3=d3, exports=window) ->
       if self.options.xAxis.enabled
         @xAxis = d3.svg.axis()
           .orient("bottom")
-          .scale(self.x_scale)
+          .scale(self.xScale)
           .tickSize(6, 1, 1)
           .tickFormat((a) -> a)
         svg.append("g")
           .attr("class", "x axis")
           .attr("title", self.options.xAxis.title)  # TODO render this title
           .attr("transform", "translate(#{self.options.margin.left}," + (self.options.height - self.options.margin.bottom) + ")")
-          .call(x_axis);
+          .call(XAxis);
 
       if self.options.yAxis.enabled
         @yAxis = d3.svg.axis()
-                 .scale(self.y_scale)
+                 .scale(self.yScale)
                  .orient("left")
         if self.options.yAxis.tickFormat
-          y_axis.tickFormat(self.options.yAxis.tickFormat)
+          yAxis.tickFormat(self.options.yAxis.tickFormat)
         svg.append("g")
           .attr("class", "y axis")
           .attr("title", self.options.yAxis.title)  # TODO render this title
-          .attr("transform", "translate(" + self.options.margin.left + "," + self.options.margin.top + ")")
-          .call(y_axis)
+          .attr("transform", "translate(#{self.options.margin.left}, #{self.options.margin.top})")
+          .call(yAxis)
 
       if @options.legend.enabled
         # @preRenderLegend(self.options.legendElem)
         @renderLegend(self.options.legend.elem)
         @postRenderLegend(self.options.legend.elem)
 
+    # event handler
+    # if you need to do anything after the chart has been rendered
     postRender: () -> @options.postRender?.call(@)
 
 
@@ -240,7 +243,7 @@ do ($=jQuery, d3=d3, exports=window) ->
       if @yAxis
         @svg.select('.y.axis').transition().call(@yAxis)
 
-      @
+      return @
 
     getMaxY: (d) ->
       # uhhh, this is confusing
@@ -251,13 +254,15 @@ do ($=jQuery, d3=d3, exports=window) ->
       self = this
       return (d, i) -> return self.options.color(i)
 
+    # how to get the attribute of the data element into xScale
     getX: () ->
       self = this
-      return (d) -> self.x_scale(d.x)
+      return (d) -> self.xScale(d.x)
 
+    # how to get the attribute of the data element into yScale
     getY: () ->
       self = this;
-      return (d) -> self.y_scale(d.y)
+      return (d) -> self.yScale(d.y)
 
     getH: () ->
       self = this;
@@ -265,7 +270,7 @@ do ($=jQuery, d3=d3, exports=window) ->
 
     rescale: (extent) ->
       @height_scale.domain([0, extent[1] - extent[0]])
-      @y_scale.domain(extent)
+      @yScale.domain(extent)
       return @
 
     # set up a layer for each series
@@ -293,11 +298,12 @@ do ($=jQuery, d3=d3, exports=window) ->
 
     # bar_width is an outer width, so it's actually more like bar space
     getBarWidth: () ->
-      len_x = @x_scale.range().length;
+      len_x = @xScale.range().length;
       @options.plot_box.w / len_x;
 
-    getLegendSeriesTitle: (d, i) ->
-      "#{i}"
+
+    ############################## LEGEND ######################################
+    getLegendSeriesTitle: (d, i) -> "#{i}"
 
     renderLegend: (el) ->
       self = this
@@ -342,7 +348,7 @@ do ($=jQuery, d3=d3, exports=window) ->
       return @
 
 
-  #***************** STACKED BAR CHART ******************/
+  ################## STACKED BAR CHART #########################################
   exports.D3StackedBarChart = class D3StackedBarChart extends D3BarChart
 
     initData: (new_data) ->
@@ -358,10 +364,10 @@ do ($=jQuery, d3=d3, exports=window) ->
 
     getY: () ->
       self = this
-      (d) -> self.y_scale(d.y + d.y0)
+      (d) -> self.yScale(d.y + d.y0)
 
 
-  #***************** GROUPED BAR CHART ******************/
+  ################## GROUPED BAR CHART #########################################
   exports.D3GroupedBarChart = class D3GroupedBarChart extends D3BarChart
 
     getLayers: () ->
@@ -381,8 +387,8 @@ do ($=jQuery, d3=d3, exports=window) ->
 
     getBarWidth: () ->
       # TODO replace with super
-      len_x = this.x_scale.range().length
-      bar_width = this.options.plot_box.w / len_x  # bar_width is an outer width
+      len_x = @xScale.range().length
+      bar_width = @options.plot_box.w / len_x  # bar_width is an outer width
 
       len_series = this._data.length  # m, i, rows
       bar_width / len_series  # sub-divide
