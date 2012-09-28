@@ -239,15 +239,11 @@ do ($=jQuery, d3=d3, tt=tt, exports=window) ->
 
       @
 
-    ###
-    getMaxY: function(data){
-      return d3.max(data, function(d) {
-        return d3.max(d, function(d) {
-          return d.y;
-        });
-      });
-    },
+    getMaxY: (d) ->
+      # uhhh, this is confusing
+      d3.max(d, (d) -> d3.max(d, (d) -> d.y))
 
+    ###
     getLayerFillStyle: function(){
       var self = this;
       return function(d, i) { return self.options.color(i); };

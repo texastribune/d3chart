@@ -211,15 +211,15 @@
         return this;
       };
 
+      D3BarChart.prototype.getMaxY = function(d) {
+        return d3.max(d, function(d) {
+          return d3.max(d, function(d) {
+            return d.y;
+          });
+        });
+      };
+
       /*
-          getMaxY: function(data){
-            return d3.max(data, function(d) {
-              return d3.max(d, function(d) {
-                return d.y;
-              });
-            });
-          },
-      
           getLayerFillStyle: function(){
             var self = this;
             return function(d, i) { return self.options.color(i); };
