@@ -66,40 +66,36 @@ do ($=jQuery, d3=d3, tt=tt, exports=window) ->
       @options[name]
 
 
-  ""
-`
+  #***************** BAR CHART ******************/
+  exports.D3BarChart = class D3BarChart extends D3Chart
+    constructor: (el, data, options) ->
+      # TODO move into super
+      self = this
+      if el.jquery  # todo what about things like zepto?
+        @elem = el[0]
+        @$elem = el
+      else if (typeof el == "string")
+        this.elem = document.getElementById(el)
+      else
+        @elem = el
+      if !@elem
+        # console.warn("missing element")
+        return false
 
-  /***************** BAR CHART ******************/
-  var D3BarChart = exports.D3BarChart = D3Chart.extend({
-    init: function(el, data, options){
-      var self = this;
-      if (el.jquery) {  // todo what about things like zepto?
-        this.elem = el[0];
-        this.$elem = el;
-      } else if (typeof el == "string"){
-        this.elem = document.getElementById(el);
-      } else {
-        this.elem = el;
-      }
-      if (!this.elem){
-        // console.warn("missing element")
-        return false;
-      }
-      if (typeof data == "string"){  // if data is url
-        d3.json(data, function(new_data) {
-          self._data = self.initData(new_data);
-          self.setUp(options);
-          self.render();
-          self.postRender();
-        });
-      } else {
-        this._data = this.initData(data);
-        this.setUp(options);
-        this.render();
-        self.postRender();
-      }
-    },
+      if (typeof data == "string")  # if data is url
+        d3.json(data, (new_data) ->
+          self._data = self.initData(new_data)
+          self.setUp(options)
+          self.render()
+          self.postRender()
+        );
+      else
+        this._data = this.initData(data)
+        this.setUp(options)
+        this.render()
+        self.postRender()
 
+    ###
     setUp: function(options){
       // merge user options and default options
       var self = this,
@@ -375,7 +371,10 @@ do ($=jQuery, d3=d3, tt=tt, exports=window) ->
         this.options.legend.postRenderLegend.call(this, el);
       }
     }
-  });
+    ###
+
+  ""
+`
 
 
   /***************** STACKED BAR CHART ******************/
