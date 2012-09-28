@@ -218,12 +218,9 @@ do ($=jQuery, d3=d3, tt=tt, exports=window) ->
           .domain(d3.range(min_x, max_x + 1))
           .rangeRoundBands([0, @options.plot_box.w], 0.1, 0.1)
 
+    getYDomain: () -> [0, @getMaxY(@_data)]
+
     ###
-
-    getYDomain: function(){
-       return [0, this.getMaxY(this._data)];
-    },
-
     refresh: function(){
       var self = this,
           data = self._data;

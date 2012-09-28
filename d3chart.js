@@ -195,12 +195,11 @@
         return d3.scale.ordinal().domain(d3.range(min_x, max_x + 1)).rangeRoundBands([0, this.options.plot_box.w], 0.1, 0.1);
       };
 
+      D3BarChart.prototype.getYDomain = function() {
+        return [0, this.getMaxY(this._data)];
+      };
+
       /*
-      
-          getYDomain: function(){
-             return [0, this.getMaxY(this._data)];
-          },
-      
           refresh: function(){
             var self = this,
                 data = self._data;
