@@ -3,7 +3,7 @@
 
   (function($, d3, tt, exports) {
     var defaultOptions;
-    return defaultOptions = {
+    defaultOptions = {
       color: d3.scale.category10(),
       height: 300,
       width: 940,
@@ -32,27 +32,27 @@
         stackOrder: "btt"
       }
     };
+    exports.normalizeFirst = function(data, idx) {
+      var factor, max_value, series, set_j, _i, _j, _len, _len1;
+      data = $.extend(true, [], data);
+      idx = idx || 0;
+      max_value = Math.max.apply(null, data.map(function(d) {
+        return d[idx].y;
+      }));
+      for (_i = 0, _len = data.length; _i < _len; _i++) {
+        series = data[_i];
+        factor = max_value / series[idx].y;
+        for (_j = 0, _len1 = set.length; _j < _len1; _j++) {
+          set_j = set[_j];
+          set_j.y *= factor / max_value * 100;
+        }
+      }
+      return data;
+    };
+    return "";
   })(jQuery, d3, tt, window);
 
   
-
-  // data processor TODO move awaaaaay
-  exports.normalizeFirst = function(data, idx){
-    data = $.extend(true, [], data);  // make a deep copy of data
-    idx = idx || 0;
-    // var max_first = data
-    var max_value = Math.max.apply(null, data.map(function(d){ return d[idx].y; }));
-    var set, factor;
-    for (var i = 0; i < data.length; i++){
-      set = data[i];
-      factor = max_value / set[idx].y;
-      for (var j = 0; j < set.length; j++){
-        set[j].y *= factor / max_value * 100;
-      }
-    }
-    return data;
-  };
-
   /***************** CHART ******************/
   var D3Chart = exports.D3Chart = tt.Class.extend({
     // override this if data needs to be scrubbed before getting charted

@@ -27,25 +27,23 @@ do ($=jQuery, d3=d3, tt=tt, exports=window) ->
       element: undefined  # required an existing DOM element
       stackOrder: "btt"  # bottom to top (btt), or top to bottom (ttb)
 
+
+  # data processor
+  # TODO move awaaaaay
+  # normalize data so that at position `idx`, the value is 100%
+  # and all other values are scaled relative to that value
+  exports.normalizeFirst = (data, idx) ->
+    data = $.extend(true, [], data)  # make a deep copy of data
+    idx = idx || 0
+    max_value = Math.max.apply(null, data.map((d) -> return d[idx].y))
+    for series in data
+      factor = max_value / series[idx].y
+      for set_j in set
+        set_j.y *= factor / max_value * 100
+    data;
+
+  ""
 `
-
-  // data processor TODO move awaaaaay
-  exports.normalizeFirst = function(data, idx){
-    data = $.extend(true, [], data);  // make a deep copy of data
-    idx = idx || 0;
-    // var max_first = data
-    var max_value = Math.max.apply(null, data.map(function(d){ return d[idx].y; }));
-    var set, factor;
-    for (var i = 0; i < data.length; i++){
-      set = data[i];
-      factor = max_value / set[idx].y;
-      for (var j = 0; j < set.length; j++){
-        set[j].y *= factor / max_value * 100;
-      }
-    }
-    return data;
-  };
-
   /***************** CHART ******************/
   var D3Chart = exports.D3Chart = tt.Class.extend({
     // override this if data needs to be scrubbed before getting charted
