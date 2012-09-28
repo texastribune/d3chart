@@ -219,12 +219,15 @@
         });
       };
 
+      D3BarChart.prototype.getLayerFillStyle = function() {
+        var self;
+        self = this;
+        return function(d, i) {
+          return self.options.color(i);
+        };
+      };
+
       /*
-          getLayerFillStyle: function(){
-            var self = this;
-            return function(d, i) { return self.options.color(i); };
-          },
-      
           getX: function(){
             var self = this;
             return function(d) { return self.x_scale(d.x); };

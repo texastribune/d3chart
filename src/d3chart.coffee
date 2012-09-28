@@ -243,12 +243,12 @@ do ($=jQuery, d3=d3, tt=tt, exports=window) ->
       # uhhh, this is confusing
       d3.max(d, (d) -> d3.max(d, (d) -> d.y))
 
-    ###
-    getLayerFillStyle: function(){
-      var self = this;
-      return function(d, i) { return self.options.color(i); };
-    },
+    # returns a function(d, i)
+    getLayerFillStyle: () ->
+      self = this
+      return (d, i) -> return self.options.color(i)
 
+    ###
     getX: function(){
       var self = this;
       return function(d) { return self.x_scale(d.x); };
