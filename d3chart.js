@@ -275,11 +275,11 @@
         return this.options.plot_box.w / len_x;
       };
 
+      D3BarChart.prototype.getLegendSeriesTitle = function(d, i) {
+        return "" + i;
+      };
+
       /*
-          getLegendSeriesTitle: function(d, i){
-            return "lol";
-          },
-      
           renderLegend: function(el){
             var self = this;
             if (el.jquery) {  // todo what about things like zepto?

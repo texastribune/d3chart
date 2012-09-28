@@ -293,11 +293,10 @@ do ($=jQuery, d3=d3, tt=tt, exports=window) ->
       len_x = @x_scale.range().length;
       @options.plot_box.w / len_x;
 
-    ###
-    getLegendSeriesTitle: function(d, i){
-      return "lol";
-    },
+    getLegendSeriesTitle: (d, i) ->
+      "#{i}"
 
+    ###
     renderLegend: function(el){
       var self = this;
       if (el.jquery) {  // todo what about things like zepto?
