@@ -304,14 +304,13 @@
         return this;
       };
 
-      /*
-          postRenderLegend: function(el){
-            if (this.options.legend.postRenderLegend) {
-              this.options.legend.postRenderLegend.call(this, el);
-            }
-          }
-      */
-
+      D3BarChart.prototype.postRenderLegend = function(el) {
+        var _ref;
+        if ((_ref = this.options.legend.postRenderLegend) != null) {
+          _ref.call(this, el);
+        }
+        return this;
+      };
 
       return D3BarChart;
 

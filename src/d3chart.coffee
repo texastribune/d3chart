@@ -28,6 +28,7 @@ do ($=jQuery, d3=d3, tt=tt, exports=window) ->
       stackOrder: "btt"  # bottom to top (btt), or top to bottom (ttb)
       # events
       # click: (d, i, this) ->
+      # postRenderLegend: (legend.element)
 
 
   # data processor
@@ -335,13 +336,10 @@ do ($=jQuery, d3=d3, tt=tt, exports=window) ->
       )
       return @
 
-    ###
-    postRenderLegend: function(el){
-      if (this.options.legend.postRenderLegend) {
-        this.options.legend.postRenderLegend.call(this, el);
-      }
-    }
-    ###
+    # event handler
+    postRenderLegend: (el) ->
+      @options.legend.postRenderLegend?.call(@, el);
+      return @
 
   ""
 `
