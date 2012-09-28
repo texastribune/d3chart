@@ -273,24 +273,22 @@ do ($=jQuery, d3=d3, tt=tt, exports=window) ->
           .attr("class", "layer")
           .style("fill", @layerFillStyle)
 
-    ###
-    // setup a bar for each point in a series
-    getBars: function(){
-      var self = this;
-      return this._layers.selectAll("rect.bar")
-        .data(function(d) { return d; })
+    # setup a bar for each point in a series
+    getBars: () ->
+      @._layers.selectAll("rect.bar")
+        .data((d) -> d)
         .enter().append("rect")
           .attr("class", "bar")
-          .attr("width", self.bar_width * 0.9)
-          .attr("x", self.x)
-          .attr("y", self.options.plot_box.h)
+          .attr("width", @bar_width * 0.9)
+          .attr("x", @x)
+          .attr("y", @options.plot_box.h)
           .attr("height", 0)
           .transition()
-            .delay(function(d, i) { return i * 10; })
-            .attr("y", self.y)
-            .attr("height", self.h);
-    },
+            .delay((d, i) -> i * 10)
+            .attr("y", @y)
+            .attr("height", @h);
 
+    ###
     getBarWidth: function(){
       var len_x = this.x_scale.range().length;
       var bar_width = this.options.plot_box.w / len_x;  // bar_width is an outer width

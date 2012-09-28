@@ -261,24 +261,15 @@
         return this.plot.selectAll("g.layer").data(this._data).enter().append("g").attr("class", "layer").style("fill", this.layerFillStyle);
       };
 
+      D3BarChart.prototype.getBars = function() {
+        return this._layers.selectAll("rect.bar").data(function(d) {
+          return d;
+        }).enter().append("rect").attr("class", "bar").attr("width", this.bar_width * 0.9).attr("x", this.x).attr("y", this.options.plot_box.h).attr("height", 0).transition().delay(function(d, i) {
+          return i * 10;
+        }).attr("y", this.y).attr("height", this.h);
+      };
+
       /*
-          // setup a bar for each point in a series
-          getBars: function(){
-            var self = this;
-            return this._layers.selectAll("rect.bar")
-              .data(function(d) { return d; })
-              .enter().append("rect")
-                .attr("class", "bar")
-                .attr("width", self.bar_width * 0.9)
-                .attr("x", self.x)
-                .attr("y", self.options.plot_box.h)
-                .attr("height", 0)
-                .transition()
-                  .delay(function(d, i) { return i * 10; })
-                  .attr("y", self.y)
-                  .attr("height", self.h);
-          },
-      
           getBarWidth: function(){
             var len_x = this.x_scale.range().length;
             var bar_width = this.options.plot_box.w / len_x;  // bar_width is an outer width
