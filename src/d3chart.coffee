@@ -252,12 +252,11 @@ do ($=jQuery, d3=d3, tt=tt, exports=window) ->
       self = this
       return (d) -> self.x_scale(d.x)
 
-    ###
-    getY: function(){
-      var self = this;
-      return function(d) { return self.y_scale(d.y); };
-    },
+    getY: () ->
+      self = this;
+      return (d) -> self.y_scale(d.y)
 
+    ###
     getH: function(){
       var self = this;
       return function(d) { return self.height_scale(d.y); };

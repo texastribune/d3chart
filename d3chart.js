@@ -235,12 +235,15 @@
         };
       };
 
+      D3BarChart.prototype.getY = function() {
+        var self;
+        self = this;
+        return function(d) {
+          return self.y_scale(d.y);
+        };
+      };
+
       /*
-          getY: function(){
-            var self = this;
-            return function(d) { return self.y_scale(d.y); };
-          },
-      
           getH: function(){
             var self = this;
             return function(d) { return self.height_scale(d.y); };
