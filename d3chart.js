@@ -116,48 +116,37 @@
         }
       }
 
+      D3BarChart.prototype.setUp = function(options) {
+        var data, plot_box, self;
+        self = this;
+        data = this._data;
+        if (!self.$elem) {
+          self.$elem = $(self.elem);
+        }
+        defaultOptions.height = self.$elem.height();
+        defaultOptions.width = self.$elem.width();
+        self.options = $.extend(true, {}, defaultOptions, options);
+        if ($.isArray(self.options.color)) {
+          self.options.color = d3.scale.ordinal().range(self.options.color);
+        }
+        plot_box = {
+          w: self.options.width - self.options.margin.left - self.options.margin.right,
+          h: self.options.height - self.options.margin.top - self.options.margin.bottom
+        };
+        self.options.plot_box = plot_box;
+        self.layerFillStyle = self.getLayerFillStyle();
+        this.x_scale = self.getXScale();
+        self.x_axis = null;
+        self.x = self.getX();
+        self.height_scale = d3.scale.linear().range([0, plot_box.h]);
+        self.y_scale = d3.scale.linear().range([plot_box.h, 0]);
+        self.y_axis = null;
+        self.y = self.getY();
+        self.h = self.getH();
+        return self.bar_width = this.getBarWidth();
+      };
+
       /*
-          setUp: function(options){
-            // merge user options and default options
-            var self = this,
-                data = this._data;
-      
-            // set up box dimensions based on the parent element
-            if (!self.$elem) { self.$elem = $(self.elem); }
-            defaultOptions.height = self.$elem.height();
-            defaultOptions.width = self.$elem.width();
-      
-            self.options = $.extend(true, {}, defaultOptions, options);
-      
-            // allow an array of hex values for convenience
-            if ($.isArray(self.options.color)) {
-              self.options.color = d3.scale.ordinal().range(self.options.color);
-            }
-      
-            // pre-calculate plot box dimensions
-            var plot_box = {
-                  w: self.options.width - self.options.margin[1] - self.options.margin[3],
-                  h: self.options.height - self.options.margin[0] - self.options.margin[2]
-                };
-            self.options.plot_box = plot_box;
-      
-            self.layerFillStyle = self.getLayerFillStyle();
-      
-            // setup x scales
-            this.x_scale = self.getXScale();
-            self.x_axis = null;
-            self.x = self.getX();
-      
-            // setup y scales
-            self.height_scale = d3.scale.linear().range([0, plot_box.h]);
-            self.y_scale = d3.scale.linear().range([plot_box.h, 0]);
-            self.y_axis = null;
-            self.y = self.getY();
-            self.h = self.getH();
-      
-            // setup bar width
-            self.bar_width = this.getBarWidth();
-          },
       
           render: function(){
             var self = this, svg, plot, x_axis, y_axis;
