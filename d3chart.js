@@ -146,78 +146,42 @@
         return self.bar_width = this.getBarWidth();
       };
 
+      D3BarChart.prototype.render = function() {
+        var plot, self, svg;
+        self = this;
+        this.$elem.removeClass('loading');
+        svg = d3.select(this.elem).append("svg").attr("width", "100%").attr("height", "100%").attr("viewBox", [0, 0, this.options.width, this.options.height].join(" ")).attr("preserveAspectRatio", "xMinYMin meet");
+        this.svg = svg;
+        plot = svg.append("g").attr("class", "plot").attr("width", this.options.plot_box.w).attr("height", this.options.plot_box.h).attr("transform", "translate(" + this.options.margin.left + ", " + this.options.margin.top + ")");
+        this.plot = plot;
+        this.rescale(self.getYDomain());
+        this._layers = this.getLayers();
+        this.getBars();
+        $('rect.bar', svg[0]).tooltip({
+          title: function() {
+            return self.options.tooltip.call(this);
+          }
+        });
+        if (self.options.xAxis.enabled) {
+          this.xAxis = d3.svg.axis().orient("bottom").scale(self.x_scale).tickSize(6, 1, 1).tickFormat(function(a) {
+            return a;
+          });
+          svg.append("g").attr("class", "x axis").attr("title", self.options.xAxis.title).attr("transform", ("translate(" + self.options.margin.left + ",") + (self.options.height - self.options.margin.bottom) + ")").call(x_axis);
+        }
+        if (self.options.yAxis.enabled) {
+          this.yAxis = d3.svg.axis().scale(self.y_scale).orient("left");
+          if (self.options.yAxis.tickFormat) {
+            y_axis.tickFormat(self.options.yAxis.tickFormat);
+          }
+          svg.append("g").attr("class", "y axis").attr("title", self.options.yAxis.title).attr("transform", "translate(" + self.options.margin.left + "," + self.options.margin.top + ")").call(y_axis);
+        }
+        if (this.options.legend.enabled) {
+          this.renderLegend(self.options.legend.elem);
+          return this.postRenderLegend(self.options.legend.elem);
+        }
+      };
+
       /*
-      
-          render: function(){
-            var self = this, svg, plot, x_axis, y_axis;
-      
-            this.$elem.removeClass('loading');
-      
-            // setup svg DOM
-            svg = d3.select(this.elem)
-                    .append("svg")
-                    .attr("width", "100%")
-                    .attr("height", "100%")
-                    .attr("viewBox", [0, 0, this.options.width, this.options.height].join(" "))
-                    .attr("preserveAspectRatio", "xMinYMin meet");
-            this.svg = svg;
-      
-            // setup plot DOM
-            plot = svg
-                     .append("g")
-                     .attr("class", "plot")
-                     .attr("width", this.options.plot_box.w)
-                     .attr("height", this.options.plot_box.h)
-                     .attr("transform", "translate(" + this.options.margin[3] + "," + this.options.margin[0] + ")");
-            this.plot = plot;
-      
-            this.rescale(self.getYDomain());
-      
-            this._layers = this.getLayers();
-            this.getBars();
-      
-            // tooltip
-            $('rect.bar', svg[0]).tooltip({
-              // manually call because options.tooltip can change
-              title: function(){ return self.options.tooltip.call(this); }
-            });
-      
-            // draw axes
-            if (self.options.xAxis.enabled) {
-              x_axis = d3.svg.axis()
-                .orient("bottom")
-                .scale(self.x_scale)
-                .tickSize(6, 1, 1)
-                .tickFormat(function(a){ return a; });
-              svg.append("g")
-                .attr("class", "x axis")
-                .attr("title", self.options.xAxis.title)  // TODO render this title
-                .attr("transform", "translate(" + self.options.margin[3] + "," + (self.options.height - self.options.margin[2]) + ")")
-                .call(x_axis);
-              self.xAxis = x_axis;
-            }
-            if (self.options.yAxis.enabled) {
-              y_axis = d3.svg.axis()
-                       .scale(self.y_scale)
-                       .orient("left");
-              if (self.options.yAxis.tickFormat) {
-                y_axis.tickFormat(self.options.yAxis.tickFormat);
-              }
-              svg.append("g")
-                .attr("class", "y axis")
-                .attr("title", self.options.yAxis.title)  // TODO render this title
-                .attr("transform", "translate(" + self.options.margin[3] + "," + self.options.margin[0] + ")")
-                .call(y_axis);
-              self.yAxis = y_axis;
-            }
-            if (self.options.legend.enabled) {
-              // only one chart has a legend, as we add more, this will naturally
-              // get refactored into something that makes sense
-              // self.preRenderLegend(self.options.legendElem);
-              self.renderLegend(self.options.legend.elem);
-              self.postRenderLegend(self.options.legend.elem);
-            }
-          },
       
           postRender: function(){
             if (this.options.postRender) {
