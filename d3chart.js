@@ -4,7 +4,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   (function($, d3, tt, exports) {
-    var D3BarChart, D3Chart, defaultOptions;
+    var D3BarChart, D3Chart, D3StackedBarChart, defaultOptions;
     defaultOptions = {
       color: d3.scale.category10(),
       height: 300,
@@ -315,33 +315,41 @@
       return D3BarChart;
 
     })(D3Chart);
+    exports.D3StackedBarChart = D3StackedBarChart = (function(_super) {
+
+      __extends(D3StackedBarChart, _super);
+
+      function D3StackedBarChart() {
+        return D3StackedBarChart.__super__.constructor.apply(this, arguments);
+      }
+
+      D3StackedBarChart.prototype.initData = function(new_data) {
+        return d3.layout.stack()(new_data);
+      };
+
+      D3StackedBarChart.prototype.getMaxY = function(d) {
+        return d3.max(d, function(d) {
+          return d3.max(d, function(d) {
+            return d.y + d.y0;
+          });
+        });
+      };
+
+      D3StackedBarChart.prototype.getY = function() {
+        var self;
+        self = this;
+        return function(d) {
+          return self.y_scale(d.y + d.y0);
+        };
+      };
+
+      return D3StackedBarChart;
+
+    })(D3BarChart);
     return "";
   })(jQuery, d3, tt, window);
 
   
-
-
-  /***************** STACKED BAR CHART ******************/
-  var D3StackedBarChart = exports.D3StackedBarChart = D3BarChart.extend({
-
-    initData: function(new_data){
-      // process add stack offsets
-      return d3.layout.stack()(new_data);
-    },
-
-    getMaxY: function(data){
-      return d3.max(data, function(d) {
-        return d3.max(d, function(d) {
-          return d.y + d.y0;
-        });
-      });
-    },
-
-    getY: function(){
-      var self = this;
-      return function(d) { return self.y_scale(d.y + d.y0); };
-    }
-  });
 
 
   /***************** GROUPED BAR CHART ******************/

@@ -341,31 +341,28 @@ do ($=jQuery, d3=d3, tt=tt, exports=window) ->
       @options.legend.postRenderLegend?.call(@, el);
       return @
 
+
+  #***************** STACKED BAR CHART ******************/
+  exports.D3StackedBarChart = class D3StackedBarChart extends D3BarChart
+
+    initData: (new_data) ->
+      # process add stack offsets
+      d3.layout.stack()(new_data)
+
+    getMaxY: (d) ->
+      d3.max(d, (d) ->
+        d3.max(d, (d) ->
+          d.y + d.y0;
+        )
+      )
+
+    getY: () ->
+      self = this
+      (d) -> self.y_scale(d.y + d.y0)
+
+
   ""
 `
-
-
-  /***************** STACKED BAR CHART ******************/
-  var D3StackedBarChart = exports.D3StackedBarChart = D3BarChart.extend({
-
-    initData: function(new_data){
-      // process add stack offsets
-      return d3.layout.stack()(new_data);
-    },
-
-    getMaxY: function(data){
-      return d3.max(data, function(d) {
-        return d3.max(d, function(d) {
-          return d.y + d.y0;
-        });
-      });
-    },
-
-    getY: function(){
-      var self = this;
-      return function(d) { return self.y_scale(d.y + d.y0); };
-    }
-  });
 
 
   /***************** GROUPED BAR CHART ******************/
