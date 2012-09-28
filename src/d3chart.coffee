@@ -288,13 +288,12 @@ do ($=jQuery, d3=d3, tt=tt, exports=window) ->
             .attr("y", @y)
             .attr("height", @h);
 
-    ###
-    getBarWidth: function(){
-      var len_x = this.x_scale.range().length;
-      var bar_width = this.options.plot_box.w / len_x;  // bar_width is an outer width
-      return bar_width;
-    },
+    # bar_width is an outer width, so it's actually more like bar space
+    getBarWidth: () ->
+      len_x = @x_scale.range().length;
+      @options.plot_box.w / len_x;
 
+    ###
     getLegendSeriesTitle: function(d, i){
       return "lol";
     },

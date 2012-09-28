@@ -269,13 +269,13 @@
         }).attr("y", this.y).attr("height", this.h);
       };
 
+      D3BarChart.prototype.getBarWidth = function() {
+        var len_x;
+        len_x = this.x_scale.range().length;
+        return this.options.plot_box.w / len_x;
+      };
+
       /*
-          getBarWidth: function(){
-            var len_x = this.x_scale.range().length;
-            var bar_width = this.options.plot_box.w / len_x;  // bar_width is an outer width
-            return bar_width;
-          },
-      
           getLegendSeriesTitle: function(d, i){
             return "lol";
           },
