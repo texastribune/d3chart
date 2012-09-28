@@ -243,12 +243,15 @@
         };
       };
 
+      D3BarChart.prototype.getH = function() {
+        var self;
+        self = this;
+        return function(d) {
+          return self.height_scale(d.y);
+        };
+      };
+
       /*
-          getH: function(){
-            var self = this;
-            return function(d) { return self.height_scale(d.y); };
-          },
-      
           rescale: function(extent){
             // TODO get rid of this method
             this.height_scale.domain([0, extent[1] - extent[0]]);
