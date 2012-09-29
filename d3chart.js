@@ -53,7 +53,34 @@
     };
     exports.D3Chart = D3Chart = (function() {
 
-      function D3Chart() {}
+      function D3Chart(el, data, options) {
+        var self;
+        self = this;
+        if (el.jquery) {
+          this.elem = el[0];
+          this.$elem = el;
+        } else if (typeof el === "string") {
+          this.elem = document.getElementById(el);
+        } else {
+          this.elem = el;
+        }
+        if (!this.elem) {
+          return false;
+        }
+        if (typeof data === "string") {
+          d3.json(data, function(new_data) {
+            self._data = self.initData(new_data);
+            self.setUp(options);
+            self.render();
+            return self.postRender();
+          });
+        } else {
+          this._data = this.initData(data);
+          this.setUp(options);
+          this.render();
+          self.postRender();
+        }
+      }
 
       D3Chart.prototype.initData = function(data) {
         return data;
@@ -87,33 +114,8 @@
 
       __extends(D3BarChart, _super);
 
-      function D3BarChart(el, data, options) {
-        var self;
-        self = this;
-        if (el.jquery) {
-          this.elem = el[0];
-          this.$elem = el;
-        } else if (typeof el === "string") {
-          this.elem = document.getElementById(el);
-        } else {
-          this.elem = el;
-        }
-        if (!this.elem) {
-          return false;
-        }
-        if (typeof data === "string") {
-          d3.json(data, function(new_data) {
-            self._data = self.initData(new_data);
-            self.setUp(options);
-            self.render();
-            return self.postRender();
-          });
-        } else {
-          this._data = this.initData(data);
-          this.setUp(options);
-          this.render();
-          self.postRender();
-        }
+      function D3BarChart() {
+        return D3BarChart.__super__.constructor.apply(this, arguments);
       }
 
       D3BarChart.prototype.setUp = function(options) {

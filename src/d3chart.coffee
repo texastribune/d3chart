@@ -47,31 +47,6 @@ do ($=jQuery, d3=d3, exports=window) ->
 
 
   exports.D3Chart = class D3Chart
-    # override @initData if data needs to be scrubbed before getting charted
-    initData: (data) -> data
-
-    # get or set data
-    data: (new_data) ->
-      if new_data?
-        @_data = @initData(new_data)
-        @refresh()
-        return @
-      @_data
-
-    # get or set data
-    refresh: () -> @
-
-    # get or set option
-    option: (name, newvalue) ->
-      if newvalue?
-        @options[name] = newvalue;
-        return @
-      @options[name]
-
-
-  ################################ BAR CHART ###################################
-
-  exports.D3BarChart = class D3BarChart extends D3Chart
     constructor: (el, data, options) ->
       # TODO move into super
       self = this
@@ -99,6 +74,31 @@ do ($=jQuery, d3=d3, exports=window) ->
         this.render()
         self.postRender()
 
+    # override @initData if data needs to be scrubbed before getting charted
+    initData: (data) -> data
+
+    # get or set data
+    data: (new_data) ->
+      if new_data?
+        @_data = @initData(new_data)
+        @refresh()
+        return @
+      @_data
+
+    # get or set data
+    refresh: () -> @
+
+    # get or set option
+    option: (name, newvalue) ->
+      if newvalue?
+        @options[name] = newvalue;
+        return @
+      @options[name]
+
+
+  ################################ BAR CHART ###################################
+
+  exports.D3BarChart = class D3BarChart extends D3Chart
     setUp: (options) ->
       # merge user options and default options
       self = this
