@@ -11,15 +11,17 @@ do ($=jQuery, d3=d3, exports=window) ->
       right: 0
       bottom: 30
       left: 50
-    tooltip: ->
-      d = @__data__
-      d.title || d.y
+    tooltip:
+      enabled: false
+      format: ->
+        d = @__data__
+        d.title || d.y
     xAxis:
-      enabled: true
+      enabled: false
       title: ""
       # tickFormat: (a) -> a
     yAxis:
-      enabled: true
+      enabled: false
       title: ""
       # tickFormat: (a) -> a`
     legend:
@@ -50,26 +52,30 @@ do ($=jQuery, d3=d3, exports=window) ->
     # set up the DOM element the chart is associated with
     # and then call main
     constructor: (el, data, options) ->
-      self = @
       if el.jquery
         @elem = el[0]
         @$elem = el
       else if (typeof el == "string")
-        this.elem = document.getElementById(el)
+        @elem = document.getElementById(el)
+        @$elem = $(@elem)
       else
         @elem = el
+        @$elem = $(@elem)
       if !@elem
-        # console.warn("missing element")
+        console.warn("missing element")
         return false
 
       # D3Chart can take a url as data. When that happens, it sends off an
       # ajax request, expecting json, and then resumes constructing the chart
       if (typeof data == "string")  # if data is url
+        self = @
         d3.json(data, (new_data) ->
           self.main.call(self, data options)
         )
       else
         @main(data, options)
+      console.log "anything happen?"
+      return @
 
     main: (data, options) ->
       @_data = @initData data
@@ -82,19 +88,12 @@ do ($=jQuery, d3=d3, exports=window) ->
     initData: (data) -> data
 
     setUp: (options) ->
-      # merge user options and default options
-      self = this
-      data = this._data
-
-      # cache the jquery representation of the element if it doesn't already exist
-      if !@$elem
-        self.$elem = $(self.elem)
-
       # set up box dimensions based on the parent element
       defaultOptions.height = @$elem.height()
       defaultOptions.width = @$elem.width()
 
-      @options = $.extend(true, {}, defaultOptions, options)
+      # merge user options and default options
+      @options = $.extend(true, {}, defaultOptions, options || {})
 
       # allow an array of hex values for convenience
       if $.isArray(@options.color)
@@ -102,8 +101,8 @@ do ($=jQuery, d3=d3, exports=window) ->
 
       # pre-calculate plot box dimensions
       plot_box =
-        w: self.options.width - self.options.margin.left - self.options.margin.right
-        h: self.options.height - self.options.margin.top - self.options.margin.bottom
+        w: @options.width - @options.margin.left - @options.margin.right
+        h: @options.height - @options.margin.top - @options.margin.bottom
       @options.plot_box = plot_box
 
       @$elem.addClass "loading"
@@ -167,6 +166,7 @@ do ($=jQuery, d3=d3, exports=window) ->
       @x = @getX()
 
       # setup y scales
+      plot_box = @options.plot_box
       self.height_scale = d3.scale.linear().range([0, plot_box.h])
       self.yScale = d3.scale.linear().range([plot_box.h, 0])
       self.yAxis = null
@@ -180,44 +180,46 @@ do ($=jQuery, d3=d3, exports=window) ->
       super("render")
 
       self = @
-      this.rescale(self.getYDomain())
+      @rescale(@getYDomain())
 
-      this._layers = this.getLayers()
-      this.getBars()
+      @_layers = @getLayers()
+      @getBars()
 
       # tooltip
       #
       # tooltips are done through bootstrap's tooltip jquery plugin.
       # that's why the syntax has switched from d3 to jquery
-      $('rect.bar', svg[0]).tooltip({
-        # manually call because options.tooltip can change
-        title: () -> self.options.tooltip.call(this)
-      })
+      if @options.tooltip.enabled
+        # FIXME
+        $('rect.bar', @svg[0]).tooltip({
+          # manually call because options.tooltip can change
+          title: () -> self.options.tooltip.call(this)
+        })
 
       # draw axes
-      if self.options.xAxis.enabled
+      if @options.xAxis.enabled
         @xAxis = d3.svg.axis()
           .orient("bottom")
           .scale(self.xScale)
           .tickSize(6, 1, 1)
           .tickFormat((a) -> a)
-        svg.append("g")
+        @svg.append("g")
           .attr("class", "x axis")
           .attr("title", self.options.xAxis.title)  # TODO render this title
           .attr("transform", "translate(#{self.options.margin.left}," + (self.options.height - self.options.margin.bottom) + ")")
-          .call(XAxis);
+          .call(@xAxis);
 
-      if self.options.yAxis.enabled
+      if @options.yAxis.enabled
         @yAxis = d3.svg.axis()
                  .scale(self.yScale)
                  .orient("left")
         if self.options.yAxis.tickFormat
           yAxis.tickFormat(self.options.yAxis.tickFormat)
-        svg.append("g")
+        @svg.append("g")
           .attr("class", "y axis")
           .attr("title", self.options.yAxis.title)  # TODO render this title
           .attr("transform", "translate(#{self.options.margin.left}, #{self.options.margin.top})")
-          .call(yAxis)
+          .call(@yAxis)
 
       if @options.legend.enabled
         # @preRenderLegend(self.options.legendElem)

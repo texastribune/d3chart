@@ -14,17 +14,20 @@ var __hasProp = {}.hasOwnProperty,
       bottom: 30,
       left: 50
     },
-    tooltip: function() {
-      var d;
-      d = this.__data__;
-      return d.title || d.y;
+    tooltip: {
+      enabled: false,
+      format: function() {
+        var d;
+        d = this.__data__;
+        return d.title || d.y;
+      }
     },
     xAxis: {
-      enabled: true,
+      enabled: false,
       title: ""
     },
     yAxis: {
-      enabled: true,
+      enabled: false,
       title: ""
     },
     legend: {
@@ -54,25 +57,30 @@ var __hasProp = {}.hasOwnProperty,
 
     function D3Chart(el, data, options) {
       var self;
-      self = this;
       if (el.jquery) {
         this.elem = el[0];
         this.$elem = el;
       } else if (typeof el === "string") {
         this.elem = document.getElementById(el);
+        this.$elem = $(this.elem);
       } else {
         this.elem = el;
+        this.$elem = $(this.elem);
       }
       if (!this.elem) {
+        console.warn("missing element");
         return false;
       }
       if (typeof data === "string") {
+        self = this;
         d3.json(data, function(new_data) {
           return self.main.call(self, data(options));
         });
       } else {
         this.main(data, options);
       }
+      console.log("anything happen?");
+      return this;
     }
 
     D3Chart.prototype.main = function(data, options) {
@@ -87,21 +95,16 @@ var __hasProp = {}.hasOwnProperty,
     };
 
     D3Chart.prototype.setUp = function(options) {
-      var data, plot_box, self;
-      self = this;
-      data = this._data;
-      if (!this.$elem) {
-        self.$elem = $(self.elem);
-      }
+      var plot_box;
       defaultOptions.height = this.$elem.height();
       defaultOptions.width = this.$elem.width();
-      this.options = $.extend(true, {}, defaultOptions, options);
+      this.options = $.extend(true, {}, defaultOptions, options || {});
       if ($.isArray(this.options.color)) {
         this.options.color = d3.scale.ordinal().range(this.options.color);
       }
       plot_box = {
-        w: self.options.width - self.options.margin.left - self.options.margin.right,
-        h: self.options.height - self.options.margin.top - self.options.margin.bottom
+        w: this.options.width - this.options.margin.left - this.options.margin.right,
+        h: this.options.height - this.options.margin.top - this.options.margin.bottom
       };
       this.options.plot_box = plot_box;
       return this.$elem.addClass("loading");
@@ -151,13 +154,14 @@ var __hasProp = {}.hasOwnProperty,
     }
 
     D3BarChart.prototype.setUp = function(options) {
-      var self;
+      var plot_box, self;
       D3BarChart.__super__.setUp.call(this, "setUp");
       self = this;
       this.layerFillStyle = this.getLayerFillStyle();
       this.xScale = this.getXScale();
       this.XAxis = null;
       this.x = this.getX();
+      plot_box = this.options.plot_box;
       self.height_scale = d3.scale.linear().range([0, plot_box.h]);
       self.yScale = d3.scale.linear().range([plot_box.h, 0]);
       self.yAxis = null;
@@ -170,26 +174,28 @@ var __hasProp = {}.hasOwnProperty,
       var self;
       D3BarChart.__super__.render.call(this, "render");
       self = this;
-      this.rescale(self.getYDomain());
+      this.rescale(this.getYDomain());
       this._layers = this.getLayers();
       this.getBars();
-      $('rect.bar', svg[0]).tooltip({
-        title: function() {
-          return self.options.tooltip.call(this);
-        }
-      });
-      if (self.options.xAxis.enabled) {
+      if (this.options.tooltip.enabled) {
+        $('rect.bar', this.svg[0]).tooltip({
+          title: function() {
+            return self.options.tooltip.call(this);
+          }
+        });
+      }
+      if (this.options.xAxis.enabled) {
         this.xAxis = d3.svg.axis().orient("bottom").scale(self.xScale).tickSize(6, 1, 1).tickFormat(function(a) {
           return a;
         });
-        svg.append("g").attr("class", "x axis").attr("title", self.options.xAxis.title).attr("transform", ("translate(" + self.options.margin.left + ",") + (self.options.height - self.options.margin.bottom) + ")").call(XAxis);
+        this.svg.append("g").attr("class", "x axis").attr("title", self.options.xAxis.title).attr("transform", ("translate(" + self.options.margin.left + ",") + (self.options.height - self.options.margin.bottom) + ")").call(this.xAxis);
       }
-      if (self.options.yAxis.enabled) {
+      if (this.options.yAxis.enabled) {
         this.yAxis = d3.svg.axis().scale(self.yScale).orient("left");
         if (self.options.yAxis.tickFormat) {
           yAxis.tickFormat(self.options.yAxis.tickFormat);
         }
-        svg.append("g").attr("class", "y axis").attr("title", self.options.yAxis.title).attr("transform", "translate(" + self.options.margin.left + ", " + self.options.margin.top + ")").call(yAxis);
+        this.svg.append("g").attr("class", "y axis").attr("title", self.options.yAxis.title).attr("transform", "translate(" + self.options.margin.left + ", " + self.options.margin.top + ")").call(this.yAxis);
       }
       if (this.options.legend.enabled) {
         this.renderLegend(self.options.legend.elem);
