@@ -74,7 +74,6 @@ do ($=jQuery, d3=d3, exports=window) ->
         )
       else
         @main(data, options)
-      console.log "anything happen?"
       return @
 
     main: (data, options) ->

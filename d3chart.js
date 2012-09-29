@@ -79,7 +79,6 @@ var __hasProp = {}.hasOwnProperty,
       } else {
         this.main(data, options);
       }
-      console.log("anything happen?");
       return this;
     }
 

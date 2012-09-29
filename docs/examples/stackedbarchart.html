@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Example Chart</title>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/d3.v2.js"></script>
+    <script src="/d3chart.js"></script>
+    <style>
+      #chart {
+        background: #CCC;
+        height: 300px;
+      }
+      .loading {
+        background: #333;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="chart"></div>
+    <script>
+var data = [
+    [{x: 0, y: 0},
+     {x: 1, y: 1},
+     {x: 2, y: 2},
+     {x: 3, y: 3},
+     {x: 4, y: 4}],
+    [{x: 0, y: 2},
+     {x: 1, y: 2},
+     {x: 2, y: 2},
+     {x: 3, y: 2},
+     {x: 4, y: 2}]];
+var mychart = new D3StackedBarChart("chart", data);
+    </script>
+  </body>
+</html>
