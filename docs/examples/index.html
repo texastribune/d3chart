@@ -7,8 +7,11 @@
     <script src="/d3chart.js"></script>
     <style>
       #chart {
-        background: #333;
+        background: #CCC;
         height: 300px;
+      }
+      .loading {
+        background: #333;
       }
     </style>
   </head>
@@ -16,7 +19,7 @@
     <div id="chart"></div>
     <script>
       var data = [[1, 2, 3, 4, 3, 2, 1]];
-      D3Chart("chart", data);
+      new D3Chart("chart", data);
     </script>
   </body>
 </html>

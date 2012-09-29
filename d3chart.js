@@ -68,21 +68,54 @@ var __hasProp = {}.hasOwnProperty,
       }
       if (typeof data === "string") {
         d3.json(data, function(new_data) {
-          self._data = self.initData(new_data);
-          self.setUp(options);
-          self.render();
-          return self.postRender();
+          return self.main.call(self, data(options));
         });
       } else {
-        this._data = this.initData(data);
-        this.setUp(options);
-        this.render();
-        self.postRender();
+        this.main(data, options);
       }
     }
 
+    D3Chart.prototype.main = function(data, options) {
+      this._data = this.initData(data);
+      this.setUp(options);
+      this.render();
+      return this.postRender();
+    };
+
     D3Chart.prototype.initData = function(data) {
       return data;
+    };
+
+    D3Chart.prototype.setUp = function(options) {
+      var data, plot_box, self;
+      self = this;
+      data = this._data;
+      if (!this.$elem) {
+        self.$elem = $(self.elem);
+      }
+      defaultOptions.height = this.$elem.height();
+      defaultOptions.width = this.$elem.width();
+      this.options = $.extend(true, {}, defaultOptions, options);
+      if ($.isArray(this.options.color)) {
+        this.options.color = d3.scale.ordinal().range(this.options.color);
+      }
+      plot_box = {
+        w: self.options.width - self.options.margin.left - self.options.margin.right,
+        h: self.options.height - self.options.margin.top - self.options.margin.bottom
+      };
+      this.options.plot_box = plot_box;
+      return this.$elem.addClass("loading");
+    };
+
+    D3Chart.prototype.render = function() {
+      this.$elem.removeClass('loading');
+      this.svg = d3.select(this.elem).append("svg").attr("width", "100%").attr("height", "100%").attr("viewBox", [0, 0, this.options.width, this.options.height].join(" ")).attr("preserveAspectRatio", "xMinYMin meet");
+      return this.plot = this.svg.append("g").attr("class", "plot").attr("width", this.options.plot_box.w).attr("height", this.options.plot_box.h).attr("transform", "translate(" + this.options.margin.left + ", " + this.options.margin.top + ")");
+    };
+
+    D3Chart.prototype.postRender = function() {
+      var _ref;
+      return (_ref = this.options.postRender) != null ? _ref.call(this) : void 0;
     };
 
     D3Chart.prototype.data = function(new_data) {
@@ -94,16 +127,16 @@ var __hasProp = {}.hasOwnProperty,
       return this._data;
     };
 
-    D3Chart.prototype.refresh = function() {
-      return this;
-    };
-
     D3Chart.prototype.option = function(name, newvalue) {
       if (newvalue != null) {
         this.options[name] = newvalue;
         return this;
       }
       return this.options[name];
+    };
+
+    D3Chart.prototype.refresh = function() {
+      return this;
     };
 
     return D3Chart;
@@ -118,27 +151,13 @@ var __hasProp = {}.hasOwnProperty,
     }
 
     D3BarChart.prototype.setUp = function(options) {
-      var data, plot_box, self;
+      var self;
+      D3BarChart.__super__.setUp.call(this, "setUp");
       self = this;
-      data = this._data;
-      if (!self.$elem) {
-        self.$elem = $(self.elem);
-      }
-      defaultOptions.height = self.$elem.height();
-      defaultOptions.width = self.$elem.width();
-      self.options = $.extend(true, {}, defaultOptions, options);
-      if ($.isArray(self.options.color)) {
-        self.options.color = d3.scale.ordinal().range(self.options.color);
-      }
-      plot_box = {
-        w: self.options.width - self.options.margin.left - self.options.margin.right,
-        h: self.options.height - self.options.margin.top - self.options.margin.bottom
-      };
-      self.options.plot_box = plot_box;
-      self.layerFillStyle = self.getLayerFillStyle();
-      this.xScale = self.getXScale();
-      self.XAxis = null;
-      self.x = self.getX();
+      this.layerFillStyle = this.getLayerFillStyle();
+      this.xScale = this.getXScale();
+      this.XAxis = null;
+      this.x = this.getX();
       self.height_scale = d3.scale.linear().range([0, plot_box.h]);
       self.yScale = d3.scale.linear().range([plot_box.h, 0]);
       self.yAxis = null;
@@ -148,13 +167,9 @@ var __hasProp = {}.hasOwnProperty,
     };
 
     D3BarChart.prototype.render = function() {
-      var plot, self, svg;
+      var self;
+      D3BarChart.__super__.render.call(this, "render");
       self = this;
-      this.$elem.removeClass('loading');
-      svg = d3.select(this.elem).append("svg").attr("width", "100%").attr("height", "100%").attr("viewBox", [0, 0, this.options.width, this.options.height].join(" ")).attr("preserveAspectRatio", "xMinYMin meet");
-      this.svg = svg;
-      plot = svg.append("g").attr("class", "plot").attr("width", this.options.plot_box.w).attr("height", this.options.plot_box.h).attr("transform", "translate(" + this.options.margin.left + ", " + this.options.margin.top + ")");
-      this.plot = plot;
       this.rescale(self.getYDomain());
       this._layers = this.getLayers();
       this.getBars();
@@ -180,11 +195,6 @@ var __hasProp = {}.hasOwnProperty,
         this.renderLegend(self.options.legend.elem);
         return this.postRenderLegend(self.options.legend.elem);
       }
-    };
-
-    D3BarChart.prototype.postRender = function() {
-      var _ref;
-      return (_ref = this.options.postRender) != null ? _ref.call(this) : void 0;
     };
 
     D3BarChart.prototype.getXScale = function() {

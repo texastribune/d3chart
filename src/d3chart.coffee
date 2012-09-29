@@ -47,10 +47,11 @@ do ($=jQuery, d3=d3, exports=window) ->
 
 
   exports.D3Chart = class D3Chart
+    # set up the DOM element the chart is associated with
+    # and then call main
     constructor: (el, data, options) ->
-      # TODO move into super
       self = @
-      if el.jquery  # todo what about things like zepto?
+      if el.jquery
         @elem = el[0]
         @$elem = el
       else if (typeof el == "string")
@@ -61,22 +62,77 @@ do ($=jQuery, d3=d3, exports=window) ->
         # console.warn("missing element")
         return false
 
+      # D3Chart can take a url as data. When that happens, it sends off an
+      # ajax request, expecting json, and then resumes constructing the chart
       if (typeof data == "string")  # if data is url
         d3.json(data, (new_data) ->
-          self._data = self.initData(new_data)
-          self.setUp(options)
-          self.render()
-          self.postRender()
-        );
+          self.main.call(self, data options)
+        )
       else
-        this._data = this.initData(data)
-        this.setUp(options)
-        this.render()
-        self.postRender()
+        @main(data, options)
+
+    main: (data, options) ->
+      @_data = @initData data
+      @setUp options
+      @render()
+      @postRender()
+
 
     # override @initData if data needs to be scrubbed before getting charted
     initData: (data) -> data
 
+    setUp: (options) ->
+      # merge user options and default options
+      self = this
+      data = this._data
+
+      # cache the jquery representation of the element if it doesn't already exist
+      if !@$elem
+        self.$elem = $(self.elem)
+
+      # set up box dimensions based on the parent element
+      defaultOptions.height = @$elem.height()
+      defaultOptions.width = @$elem.width()
+
+      @options = $.extend(true, {}, defaultOptions, options)
+
+      # allow an array of hex values for convenience
+      if $.isArray(@options.color)
+        @options.color = d3.scale.ordinal().range(@options.color)
+
+      # pre-calculate plot box dimensions
+      plot_box =
+        w: self.options.width - self.options.margin.left - self.options.margin.right
+        h: self.options.height - self.options.margin.top - self.options.margin.bottom
+      @options.plot_box = plot_box
+
+      @$elem.addClass "loading"
+
+    render: ->
+      # use jquery version for convenience
+      @$elem.removeClass('loading')
+
+      # setup svg DOM
+      @svg = d3.select(@elem)
+              .append("svg")
+              .attr("width", "100%")
+              .attr("height", "100%")
+              .attr("viewBox", [0, 0, @options.width, @options.height].join(" "))
+              .attr("preserveAspectRatio", "xMinYMin meet")
+
+      # setup plot DOM
+      @plot = @svg
+               .append("g")
+               .attr("class", "plot")
+               .attr("width", this.options.plot_box.w)
+               .attr("height", this.options.plot_box.h)
+               .attr("transform", "translate(#{@options.margin.left}, #{@options.margin.top})")
+
+    # event handler
+    # if you need to do anything after the chart has been rendered
+    postRender: () -> @options.postRender?.call(@)
+
+    # METHOD
     # get or set data
     data: (new_data) ->
       if new_data?
@@ -85,9 +141,6 @@ do ($=jQuery, d3=d3, exports=window) ->
         return @
       @_data
 
-    # get or set data
-    refresh: () -> @
-
     # get or set option
     option: (name, newvalue) ->
       if newvalue?
@@ -95,41 +148,23 @@ do ($=jQuery, d3=d3, exports=window) ->
         return @
       @options[name]
 
+    # METHOD
+    refresh: () -> @
+
 
   ################################ BAR CHART ###################################
 
   exports.D3BarChart = class D3BarChart extends D3Chart
     setUp: (options) ->
-      # merge user options and default options
-      self = this
-      data = this._data
+      super("setUp")
 
-      # cache the jquery representation of the element if it doesn't already exist
-      if !self.$elem
-        self.$elem = $(self.elem)
-
-      # set up box dimensions based on the parent element
-      defaultOptions.height = self.$elem.height()
-      defaultOptions.width = self.$elem.width()
-
-      self.options = $.extend(true, {}, defaultOptions, options)
-
-      # allow an array of hex values for convenience
-      if $.isArray(self.options.color)
-        self.options.color = d3.scale.ordinal().range(self.options.color)
-
-      # pre-calculate plot box dimensions
-      plot_box =
-        w: self.options.width - self.options.margin.left - self.options.margin.right
-        h: self.options.height - self.options.margin.top - self.options.margin.bottom
-      self.options.plot_box = plot_box
-
-      self.layerFillStyle = self.getLayerFillStyle()
+      self = @
+      @layerFillStyle = @getLayerFillStyle()
 
       # setup x scales
-      this.xScale = self.getXScale()
-      self.XAxis = null
-      self.x = self.getX()
+      @xScale = @getXScale()
+      @XAxis = null
+      @x = @getX()
 
       # setup y scales
       self.height_scale = d3.scale.linear().range([0, plot_box.h])
@@ -142,28 +177,9 @@ do ($=jQuery, d3=d3, exports=window) ->
       self.bar_width = this.getBarWidth()
 
     render: () ->
-      self = this
+      super("render")
 
-      this.$elem.removeClass('loading')
-
-      # setup svg DOM
-      svg = d3.select(this.elem)
-              .append("svg")
-              .attr("width", "100%")
-              .attr("height", "100%")
-              .attr("viewBox", [0, 0, this.options.width, this.options.height].join(" "))
-              .attr("preserveAspectRatio", "xMinYMin meet")
-      this.svg = svg
-
-      # setup plot DOM
-      plot = svg
-               .append("g")
-               .attr("class", "plot")
-               .attr("width", this.options.plot_box.w)
-               .attr("height", this.options.plot_box.h)
-               .attr("transform", "translate(#{@options.margin.left}, #{@options.margin.top})")
-      this.plot = plot
-
+      self = @
       this.rescale(self.getYDomain())
 
       this._layers = this.getLayers()
@@ -207,11 +223,6 @@ do ($=jQuery, d3=d3, exports=window) ->
         # @preRenderLegend(self.options.legendElem)
         @renderLegend(self.options.legend.elem)
         @postRenderLegend(self.options.legend.elem)
-
-    # event handler
-    # if you need to do anything after the chart has been rendered
-    postRender: () -> @options.postRender?.call(@)
-
 
     getXScale: () ->
       # TODO this makes a lot of assumptions about how the input data is
