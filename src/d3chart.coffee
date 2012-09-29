@@ -49,7 +49,7 @@ do ($=jQuery, d3=d3, exports=window) ->
   exports.D3Chart = class D3Chart
     constructor: (el, data, options) ->
       # TODO move into super
-      self = this
+      self = @
       if el.jquery  # todo what about things like zepto?
         @elem = el[0]
         @$elem = el
