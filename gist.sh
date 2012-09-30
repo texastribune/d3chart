@@ -3,6 +3,9 @@
 HEADER="./docs-src/includes/header-gist.html"
 FOOTER="./docs-src/includes/footer.html"
 
+MDHEADER="./docs-src/includes/header.md"
+MDFOOTER="./docs-src/includes/footer.md"
+
 EXAMPLE=$1
 
 # return 0 if file $1 was recently changed and should be pushed
@@ -29,7 +32,7 @@ if [ -n "$IS_GIST" ]; then
         changed $README
         if [ $? -eq 0 ]; then
             echo "upload $README"
-            cat $README | jist -f README.md -u $GIST
+            cat $MDHEADER $README $MDFOOTER | jist -f README.md -u $GIST
         fi
     fi
 fi
