@@ -235,14 +235,14 @@ do ($=jQuery, d3=d3, exports=window) ->
       if @options.xAxis.enabled
         @xAxis = d3.svg.axis()
           .orient("bottom")
-          .scale(self.xScale)
+          .scale(@xScale)
           .tickSize(6, 1, 1)
         if @options.xAxis.format
           @xAxis.tickFormat(@options.xAxis.format)
         @svg.append("g")
           .attr("class", "x axis")
           .attr("title", @options.xAxis.title)  # TODO render this title
-          .attr("transform", "translate(#{@options.margin.left}," + (@options.height - @options.margin.bottom) + ")")
+          .attr("transform", "translate(#{@options.margin.left}, #{(@options.height - @options.margin.bottom)})")
           .call(@xAxis)
 
       if @options.yAxis.enabled

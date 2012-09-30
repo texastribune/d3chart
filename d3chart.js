@@ -183,11 +183,11 @@ var __hasProp = {}.hasOwnProperty,
         });
       }
       if (this.options.xAxis.enabled) {
-        this.xAxis = d3.svg.axis().orient("bottom").scale(self.xScale).tickSize(6, 1, 1);
+        this.xAxis = d3.svg.axis().orient("bottom").scale(this.xScale).tickSize(6, 1, 1);
         if (this.options.xAxis.format) {
           this.xAxis.tickFormat(this.options.xAxis.format);
         }
-        this.svg.append("g").attr("class", "x axis").attr("title", this.options.xAxis.title).attr("transform", ("translate(" + this.options.margin.left + ",") + (this.options.height - this.options.margin.bottom) + ")").call(this.xAxis);
+        this.svg.append("g").attr("class", "x axis").attr("title", this.options.xAxis.title).attr("transform", "translate(" + this.options.margin.left + ", " + (this.options.height - this.options.margin.bottom) + ")").call(this.xAxis);
       }
       if (this.options.yAxis.enabled) {
         this.yAxis = d3.svg.axis().scale(self.yScale).orient("left");
