@@ -10,9 +10,10 @@ Documentation
 
 Dev Requirements
 ----------------
-CoffeeScript: `npm install coffeescript`
-Docco (to generate documentation): `npm install docco`
-Jist (to upload examples): `gem install jist`
+
+* CoffeeScript: `npm install coffeescript`
+* Docco (to generate documentation): `npm install docco`
+* Jist (to upload examples): `gem install jist`
 
 Dev Commands
 ------------
