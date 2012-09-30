@@ -285,12 +285,9 @@ do ($=jQuery, d3=d3, exports=window) ->
     # Get the appropriate [d3 ordinal scale](https://github.com/mbostock/d3/wiki/Ordinal-Scales#wiki-ordinal)
     # for the data.
     getXScale: () ->
-      # TODO this makes a lot of assumptions about how the input data is
-      # structured and ordered, replace with d3.extent
-      data = @_data
-      len_x = data[0].length
-      min_x = data[0][0].x
-      max_x = data[0][len_x - 1].x
+      d = @_data.map(@barsDataAccessor)
+      min_x = d3.min(d, (d) -> d3.min(d, (d) -> d.x))
+      max_x = d3.max(d, (d) -> d3.max(d, (d) -> d.x))
       return d3.scale.ordinal()
           .domain(d3.range(min_x, max_x + 1))
           .rangeRoundBands([0, @options.plotBox.width], 0.1, 0.1)
@@ -308,11 +305,8 @@ do ($=jQuery, d3=d3, exports=window) ->
 
     # Function for how to find the the largest value for `y` in the data.
     getMaxY: (d) ->
-      d3.max(d, (d) ->
-        d3.max(d, (d) ->
-          d.y
-        )
-      )
+      _d = d.map(@barsDataAccessor)
+      d3.max(_d, (d) -> d3.max(d, (d) -> d.y))
 
     # Return a function that decides how to color the bars based on the layer.
     getLayerFillStyle: () ->
@@ -349,10 +343,15 @@ do ($=jQuery, d3=d3, exports=window) ->
           .attr("class", "layer")
           .style("fill", @layerFillStyle)
 
+    # How to extract bar data from the layer
+    #
+    # TODO: should this be an option?
+    barsDataAccessor: (d) -> d
+
     # Setup a bar for each point in a series as a SVG rect.
     getBars: () ->
       @._layers.selectAll("rect.bar")
-        .data((d) -> d)
+        .data(@barsDataAccessor)
         .enter().append("rect")
           .attr("class", "bar")
           .attr("width", @bar_width * 0.9)
@@ -426,16 +425,13 @@ do ($=jQuery, d3=d3, exports=window) ->
     #
     initData: (new_data) ->
       # Process add stack offsets using d3's layout helper.
-      d3.layout.stack()(new_data)
+      d3.layout.stack().values(@barsDataAccessor)(new_data)
 
     # We need to customize this because instead of taking `y`, we need to
     # consider `y0` too to get the total height of all the stacked bars.
     getMaxY: (d) ->
-      d3.max(d, (d) ->
-        d3.max(d, (d) ->
-          d.y + d.y0;
-        )
-      )
+      _d = d.map(@barsDataAccessor)
+      d3.max(_d, (d) -> d3.max(d, (d) -> d.y + d.y0))
 
     # We need to offset `y` by `y0` when drawing the bars.
     getY: () ->

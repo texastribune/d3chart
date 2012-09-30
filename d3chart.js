@@ -215,11 +215,18 @@ var __hasProp = {}.hasOwnProperty,
     };
 
     D3BarChart.prototype.getXScale = function() {
-      var data, len_x, max_x, min_x;
-      data = this._data;
-      len_x = data[0].length;
-      min_x = data[0][0].x;
-      max_x = data[0][len_x - 1].x;
+      var d, max_x, min_x;
+      d = this._data.map(this.barsDataAccessor);
+      min_x = d3.min(d, function(d) {
+        return d3.min(d, function(d) {
+          return d.x;
+        });
+      });
+      max_x = d3.max(d, function(d) {
+        return d3.max(d, function(d) {
+          return d.x;
+        });
+      });
       return d3.scale.ordinal().domain(d3.range(min_x, max_x + 1)).rangeRoundBands([0, this.options.plotBox.width], 0.1, 0.1);
     };
 
@@ -228,7 +235,9 @@ var __hasProp = {}.hasOwnProperty,
     };
 
     D3BarChart.prototype.getMaxY = function(d) {
-      return d3.max(d, function(d) {
+      var _d;
+      _d = d.map(this.barsDataAccessor);
+      return d3.max(_d, function(d) {
         return d3.max(d, function(d) {
           return d.y;
         });
@@ -277,10 +286,12 @@ var __hasProp = {}.hasOwnProperty,
       return this.plot.selectAll("g.layer").data(this._data).enter().append("g").attr("class", "layer").style("fill", this.layerFillStyle);
     };
 
+    D3BarChart.prototype.barsDataAccessor = function(d) {
+      return d;
+    };
+
     D3BarChart.prototype.getBars = function() {
-      return this._layers.selectAll("rect.bar").data(function(d) {
-        return d;
-      }).enter().append("rect").attr("class", "bar").attr("width", this.bar_width * 0.9).attr("x", this.x).attr("y", this.options.plotBox.height).attr("height", 0).transition().delay(function(d, i) {
+      return this._layers.selectAll("rect.bar").data(this.barsDataAccessor).enter().append("rect").attr("class", "bar").attr("width", this.bar_width * 0.9).attr("x", this.x).attr("y", this.options.plotBox.height).attr("height", 0).transition().delay(function(d, i) {
         return i * 10;
       }).attr("y", this.y).attr("height", this.h);
     };
@@ -340,11 +351,13 @@ var __hasProp = {}.hasOwnProperty,
     }
 
     D3StackedBarChart.prototype.initData = function(new_data) {
-      return d3.layout.stack()(new_data);
+      return d3.layout.stack().values(this.barsDataAccessor)(new_data);
     };
 
     D3StackedBarChart.prototype.getMaxY = function(d) {
-      return d3.max(d, function(d) {
+      var _d;
+      _d = d.map(this.barsDataAccessor);
+      return d3.max(_d, function(d) {
         return d3.max(d, function(d) {
           return d.y + d.y0;
         });
