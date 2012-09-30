@@ -1,7 +1,7 @@
 #! /bin/bash
 
-HEADER="./docs-src/header-gist.html"
-FOOTER="./docs-src/footer.html"
+HEADER="./docs-src/includes/header-gist.html"
+FOOTER="./docs-src/includes/footer.html"
 
 EXAMPLE=$1
 

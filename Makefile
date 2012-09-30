@@ -1,6 +1,6 @@
 EXAMPLES = $(wildcard ./docs-src/*.js)
-HEADER = ./docs-src/header.html
-FOOTER = ./docs-src/footer.html
+HEADER = ./docs-src/includes/header.html
+FOOTER = ./docs-src/includes/footer.html
 
 #
 # BUILD DOCS AND EXAMPLES
