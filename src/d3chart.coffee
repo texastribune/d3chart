@@ -1,6 +1,10 @@
 # Homepage:
 # [github.com/texastribune/d3chart](https://github.com/texastribune/d3chart)
 #
+# # Examples
+#
+# * [Trivial Empty Chart](http://bl.ocks.org/3805925)
+# * [Stacked Bar Chart](http://bl.ocks.org/3802316)
 do ($=jQuery, d3=d3, exports=window) ->
 
   # # Configuration
@@ -462,10 +466,5 @@ do ($=jQuery, d3=d3, exports=window) ->
       len_series = @_data.length
       bar_width / len_series
 
-  # # Examples
-  #
-  # * [Trivial Empty Chart](http://bl.ocks.org/3805925)
-  # * [Stacked Bar Chart](http://bl.ocks.org/3802316)
-  #
   # The End
   ""  # keep coffeescript from returning the statement above.
