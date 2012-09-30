@@ -13,3 +13,7 @@ build:
 	  echo building example: $(notdir $(example)) && \
 	  cat $(HEADER) $(example) $(FOOTER) >> \
 	  docs/examples/$(notdir $(basename $(example))).html;)
+
+gist:
+	@$(foreach example, $(EXAMPLES),\
+	  cat $(HEADER2) $(example) $(FOOTER) | ./gist.sh $(example);)
