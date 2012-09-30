@@ -11,7 +11,7 @@
       }
       #chart {
         background: #FFF;
-        height: 300px;
+        height: 500px;
         outline: 1px solid #CCC;
       }
       .loading {
@@ -22,8 +22,9 @@
   <body>
     <div id="chart"></div>
     <script>
-var data = [[1, 2, 3, 4, 3, 2, 1]];
-var mychart = new D3Chart("chart", data);
+// https://gist.github.com/3805925
+
+var mychart = new D3Chart("chart", []);
     </script>
   </body>
 </html>

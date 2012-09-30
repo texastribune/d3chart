@@ -1,7 +1,10 @@
+# Homepage:
+# [github.com/texastribune/d3chart](https://github.com/texastribune/d3chart)
+#
 do ($=jQuery, d3=d3, exports=window) ->
 
-  # # CONFIGURATION
-  #
+  # # Configuration
+
   # These are the default options that get overriden when initialized.
   defaultOptions =
     # By default, any colors needed will be taken from `d3.scale.category10()`.
@@ -91,13 +94,13 @@ do ($=jQuery, d3=d3, exports=window) ->
       # D3Chart can take a url as data. When that happens, it sends off an
       # ajax request, expecting json, and then resumes constructing the chart
       if (typeof data == "string")  # if data is url
-        self = @
+        self = this
         d3.json(data, (new_data) ->
           self.main.call(self, data options)
         )
       else
         @main(data, options)
-      return @
+      return this
 
     main: (data, options) ->
       @_data = @initData data
@@ -167,14 +170,14 @@ do ($=jQuery, d3=d3, exports=window) ->
       if new_data?
         @_data = @initData(new_data)
         @refresh()
-        return @
+        return this
       @_data
 
     # Get or set option.
     option: (name, newvalue) ->
       if newvalue?
         @options[name] = newvalue;
-        return @
+        return this
       @options[name]
 
     # Refresh.
@@ -211,7 +214,7 @@ do ($=jQuery, d3=d3, exports=window) ->
     render: () ->
       super()
 
-      self = @
+      self = this
       @rescale(@getYDomain())
 
       @_layers = @getLayers()
@@ -273,7 +276,7 @@ do ($=jQuery, d3=d3, exports=window) ->
       if @yAxis  # should only exist if @optionx.yAxis.enabled anyways
         @svg.select('.y.axis').transition().call(@yAxis)
 
-      return @
+      return this
 
     # Get the appropriate [d3 ordinal scale](https://github.com/mbostock/d3/wiki/Ordinal-Scales#wiki-ordinal)
     # for the data.
@@ -309,22 +312,22 @@ do ($=jQuery, d3=d3, exports=window) ->
 
     # Return a function that decides how to color the bars based on the layer.
     getLayerFillStyle: () ->
-      self = @
+      self = this
       return (d, i) -> return self.options.color(i)
 
     # How to get the attribute of the data element into `xScale`.
     getX: () ->
-      self = @
+      self = this
       return (d) -> self.xScale(d.x)
 
     # How to get the attribute of the data element into `yScale`.
     getY: () ->
-      self = @
+      self = this
       return (d) -> self.yScale(d.y)
 
     # How to get the attribute of the data element into `hScale`.
     getH: () ->
-      self = @
+      self = this
       return (d) -> self.hScale(d.y)
 
     # Given some extent like `[0, 1]`, set the domains for the two scales
@@ -332,7 +335,7 @@ do ($=jQuery, d3=d3, exports=window) ->
     rescale: (extent) ->
       @hScale.domain([0, extent[1] - extent[0]])
       @yScale.domain(extent)
-      return @
+      return this
 
     # Set up a layer for each series as a SVG group.
     getLayers: () ->
@@ -403,14 +406,13 @@ do ($=jQuery, d3=d3, exports=window) ->
         d3.event.preventDefault()
         self.options.legend.click?(d, i, this)
       )
-      return @
+      return this
 
     # If you want to customize the legend, it may be easier to alter the legend
     # created by `renderLegend` instead of making your own.
     postRenderLegend: (el) ->
       @options.legend.postRenderLegend?.call(@, el);
-      return @
-
+      return this
 
   #
   # # Stacked Bar Chart
@@ -433,7 +435,7 @@ do ($=jQuery, d3=d3, exports=window) ->
 
     # We need to offset `y` by `y0` when drawing the bars.
     getY: () ->
-      self = @
+      self = this
       (d) -> self.yScale(d.y + d.y0)
 
 
@@ -446,7 +448,7 @@ do ($=jQuery, d3=d3, exports=window) ->
 
     # Shift each series so the bars are adjacent to each other.
     getLayers: () ->
-      self = @
+      self = this
       layers = super()
       layers
         .attr("transform", (d, i) ->
@@ -457,10 +459,13 @@ do ($=jQuery, d3=d3, exports=window) ->
     # bars into the same space.
     getBarWidth: () ->
       bar_width = super()
-
       len_series = @_data.length
       bar_width / len_series
 
+  # # Examples
+  #
+  # * [Trivial Empty Chart](http://bl.ocks.org/3805925)
+  # * [Stacked Bar Chart](http://bl.ocks.org/3802316)
   #
   # The End
   ""  # keep coffeescript from returning the statement above.
