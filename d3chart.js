@@ -36,6 +36,7 @@ var __hasProp = {}.hasOwnProperty,
       enabled: false,
       element: void 0,
       reversed: false,
+      titleAccessor: void 0,
       click: void 0,
       postRender: void 0
     },
@@ -328,8 +329,7 @@ var __hasProp = {}.hasOwnProperty,
     };
 
     D3BarChart.prototype.renderLegend = function(el) {
-      var items, legendStackOrder, self, _ref;
-      self = this;
+      var items, legendStackOrder, self;
       if (el.jquery) {
         this.$legend = el;
         this.legend = el[0];
@@ -338,12 +338,15 @@ var __hasProp = {}.hasOwnProperty,
       } else {
         this.legend = el;
       }
-      legendStackOrder = (_ref = this.options.legend.reversed) != null ? _ref : {
-        ":first-child": null
-      };
+      legendStackOrder = this.options.legend.reversed ? ":first-child" : null;
       items = d3.select(this.legend).append("ul").attr("class", "nav nav-pills nav-stacked").selectAll("li").data(this._data).enter().insert("li", legendStackOrder).attr('class', 'inactive').append('a').attr("href", "#");
       items.append("span").attr("class", "legend-key").html("&#9608;").style("color", this.layerFillStyle);
-      items.append("span").attr("class", "legend-value").text(self.getLegendSeriesTitle);
+      if (this.options.legend.titleAccessor != null) {
+        items.append("span").attr("class", "legend-value").text(this.options.legend.titleAccessor);
+      } else {
+        items.append("span").attr("class", "legend-value").text(this.getLegendSeriesTitle);
+      }
+      self = this;
       items.on("click", function(d, i) {
         var _base;
         d3.event.preventDefault();

@@ -55,6 +55,7 @@ do ($=jQuery, d3=d3, exports=window) ->
       enabled: false
       element: undefined  # can be a DOM element, jQuery element, or string to the ID
       reversed: false  # bottom-to-top, or top-to-bottom
+      titleAccessor: undefined  # function that takes (d, i) and returns a string
       # Events that can be attached to the legend.
       # The arguments the handler receives are documented to the right.
       click: undefined  # (d, i, this)
@@ -393,35 +394,40 @@ do ($=jQuery, d3=d3, exports=window) ->
 
     # Build the DOM for the legend
     renderLegend: (el) ->
-      self = this
       if el.jquery  # todo what about things like zepto?
-        this.$legend = el
-        this.legend = el[0]
-      else if typeof(el) == "string"
-        this.legend = document.getElementById(el);
+        @$legend = el
+        @legend = el[0]
+      else if typeof el == "string"
+        @legend = document.getElementById el
       else
-        this.legend = el
+        @legend = el
       # Bars are built bottom-up, so build the legend the same way using `legend.reversed`.
       # Use `null` to make `d3.insert` behave like `d3.append`.
       #
       # * [d3.insert ref](https://github.com/mbostock/d3/wiki/Selections#wiki-insert)
       # * [dom insertBefore's null convention](http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#ID-952280727)
-      legendStackOrder = @options.legend.reversed ? ":first-child" : null
+      legendStackOrder = if @options.legend.reversed then ":first-child" else null
 
-      items = d3.select(this.legend).append("ul")
+      items = d3.select(@legend).append("ul")
         .attr("class", "nav nav-pills nav-stacked")
         .selectAll("li")
-          .data(this._data)
+          .data(@_data)
           .enter()
             .insert("li", legendStackOrder)
               .attr('class', 'inactive')
               .append('a').attr("href", "#")
       items
         .append("span").attr("class", "legend-key")
-        .html("&#9608;").style("color", this.layerFillStyle)  # TODO use an element that can be controlled with CSS better but is also printable
-      items
-        .append("span").attr("class", "legend-value")
-        .text(self.getLegendSeriesTitle)
+        .html("&#9608;").style("color", @layerFillStyle)  # TODO use an element that can be controlled with CSS better but is also printable
+      if @options.legend.titleAccessor?
+        items
+          .append("span").attr("class", "legend-value")
+          .text(@options.legend.titleAccessor)
+      else
+        items
+          .append("span").attr("class", "legend-value")
+          .text(@getLegendSeriesTitle)
+      self = this  # need a reference to `this`
       items.on("click", (d, i) ->
         d3.event.preventDefault()
         self.options.legend.click?(d, i, this)
