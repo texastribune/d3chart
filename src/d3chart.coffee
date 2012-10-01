@@ -57,6 +57,8 @@ do ($=jQuery, d3=d3, exports=window) ->
       # The arguments the handler receives are documented to the right.
       click: undefined  # (d, i, this)
       postRender: undefined  # (DOM Node)
+    # Event: If you need to execute something after `render`
+    postRender: undefined
 
 
   # ## Helper Util: Data processor
@@ -178,7 +180,7 @@ do ($=jQuery, d3=d3, exports=window) ->
 
     # A postRender event is provided if you need to do anything after the
     # chart has been rendered.
-    postRender: () -> @options.postRender?.call(@)
+    postRender: -> @options.postRender?.call(this)
 
     # ## Methods
 
@@ -536,6 +538,10 @@ do ($=jQuery, d3=d3, exports=window) ->
         @_staggerMode = @_barSpacing * @_data.length
       return bar_width - @_barSpacing * @_data.length
 
+# # Tests
+#
+# Tests are written in QUnit and can be run/viewed [here](../tests/).
+#
 # # TODOs
 #
 # * Give D3Chart children their own defaults

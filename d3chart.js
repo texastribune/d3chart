@@ -36,7 +36,8 @@ var __hasProp = {}.hasOwnProperty,
       reversed: false,
       click: void 0,
       postRender: void 0
-    }
+    },
+    postRender: void 0
   };
   exports.normalizeFirst = function(data, idx) {
     var factor, max_value, series, set_j, _i, _j, _len, _len1;
