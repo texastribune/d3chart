@@ -107,19 +107,14 @@ do ($=jQuery, d3=d3, exports=window) ->
       return this
 
     main: (data, options) ->
-      @_data = @initData data
       @setUp options
+      @_data = @initData data
+      @plotSetUp()
       @render()
       @postRender()
 
 
-    # ## Step 1: cleaning data
-    # d3 expects data in a certain format, which is probably different from
-    # how your data comes in. You can put any logic you need to transform
-    # your data in `initData`
-    initData: (data) -> data
-
-    # ## Step 2: boilerplate
+    # ## Step 1: Grab user options
     #
     setUp: (options) ->
       # Set up box dimensions based on the containing element.
@@ -143,7 +138,16 @@ do ($=jQuery, d3=d3, exports=window) ->
       # Indicate the current state by adding the "loading" class to the container.
       @$elem.addClass "loading"
 
-    # ## Step 3: Render
+    # ## Step 2: cleaning data
+    # d3 expects data in a certain format, which is probably different from
+    # how your data comes in. You can put any logic you need to transform
+    # your data in `initData`
+    initData: (data) -> data
+
+    # ## Step 3: set up accessors
+    plotSetUp: (data) -> data
+
+    # ## Step 4: Render
     render: ->
       # Setup svg DOM.
       @svg = d3.select(@elem)
@@ -190,10 +194,7 @@ do ($=jQuery, d3=d3, exports=window) ->
 
   # # Base Bar Chart Class
   exports.D3BarChart = class D3BarChart extends D3Chart
-    # Extend D3Chart's `setUp`
-    setUp: (options) ->
-      super(options)
-
+    plotSetUp: () ->
       @layerFillStyle = @getLayerFillStyle()
 
       # Setup x scale.

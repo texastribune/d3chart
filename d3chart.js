@@ -85,14 +85,11 @@ var __hasProp = {}.hasOwnProperty,
     }
 
     D3Chart.prototype.main = function(data, options) {
-      this._data = this.initData(data);
       this.setUp(options);
+      this._data = this.initData(data);
+      this.plotSetUp();
       this.render();
       return this.postRender();
-    };
-
-    D3Chart.prototype.initData = function(data) {
-      return data;
     };
 
     D3Chart.prototype.setUp = function(options) {
@@ -107,6 +104,14 @@ var __hasProp = {}.hasOwnProperty,
         height: this.options.height - this.options.margin.top - this.options.margin.bottom
       };
       return this.$elem.addClass("loading");
+    };
+
+    D3Chart.prototype.initData = function(data) {
+      return data;
+    };
+
+    D3Chart.prototype.plotSetUp = function(data) {
+      return data;
     };
 
     D3Chart.prototype.render = function() {
@@ -152,9 +157,8 @@ var __hasProp = {}.hasOwnProperty,
       return D3BarChart.__super__.constructor.apply(this, arguments);
     }
 
-    D3BarChart.prototype.setUp = function(options) {
+    D3BarChart.prototype.plotSetUp = function() {
       var plotBox;
-      D3BarChart.__super__.setUp.call(this, options);
       this.layerFillStyle = this.getLayerFillStyle();
       this.xScale = this.getXScale();
       this.XAxis = null;
