@@ -47,6 +47,8 @@ do ($=jQuery, d3=d3, exports=window) ->
       enabled: false
       title: ""
       format: undefined
+      min: undefined
+      max: undefined
     # If you want to display a legend, you need to enable this and
     # also specify a valid DOM element to generate the legend in.
     legend:
@@ -313,7 +315,10 @@ do ($=jQuery, d3=d3, exports=window) ->
     # or
     #
     #     getMaxY: () -> 10000
-    getYDomain: () -> [0, @getMaxY(@_data)]
+    getYDomain: ->
+      min = if @options.yAxis.min? then @options.yAxis.min else 0
+      max = if @options.yAxis.max? then @options.yAxis.max else @getMaxY(@_data)
+      [min, max]
 
     # Function for how to find the the largest value for `y` in the data.
     getMaxY: (d) ->

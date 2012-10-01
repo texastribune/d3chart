@@ -28,7 +28,9 @@ var __hasProp = {}.hasOwnProperty,
     yAxis: {
       enabled: false,
       title: "",
-      format: void 0
+      format: void 0,
+      min: void 0,
+      max: void 0
     },
     legend: {
       enabled: false,
@@ -247,7 +249,10 @@ var __hasProp = {}.hasOwnProperty,
     };
 
     D3BarChart.prototype.getYDomain = function() {
-      return [0, this.getMaxY(this._data)];
+      var max, min;
+      min = this.options.yAxis.min != null ? this.options.yAxis.min : 0;
+      max = this.options.yAxis.max != null ? this.options.yAxis.max : this.getMaxY(this._data);
+      return [min, max];
     };
 
     D3BarChart.prototype.getMaxY = function(d) {
