@@ -14,11 +14,13 @@ Dev Requirements
 * CoffeeScript: `npm install coffeescript`
 * Docco (to generate documentation): `npm install docco`
 * Jist (to upload examples): `gem install jist`
+* Foreman (to run a dev webserver want coffescript watcher): `gem install foreman`
+* Python (for dev webserver and pygments, a Docco requirement)
 
 Dev Commands
 ------------
 
-* `watch.sh`: Watch script for coffeescript
+* `foreman start`: Start dev server and coffescript watcher
 * `make`: Generate documentation, docco and all examples
 * `make gist`: Upload examples as gists
 
