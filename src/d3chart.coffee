@@ -429,26 +429,34 @@ do ($=jQuery, d3=d3, exports=window) ->
   #
   # # Stacked Bar Chart
   #
+
+  #
   exports.D3StackedBarChart = class D3StackedBarChart extends D3BarChart
+
+    setUp: (options) ->
+      super(options)
+      if @options.stackOrder
+        if @options.stackOrder == "big-bottom"
+          @options.stackOrder = (d) ->
+            n = d.length
+            sums = d.map(d3_layout_stackReduceSum)
+            stackOrder = d3.range(n).sort((a, b) -> sums[b] - sums[a])
+            @_stackOrder = stackOrder  # hold onto this order for later
+            return stackOrder
+      return this
 
     #
     initData: (new_data) ->
       # Process add stack offsets using d3's layout helper.
       stack = d3.layout.stack()
-      stackOrder = undefined  # HACK coffeescript puts in wrong scope
       if @options.stackOrder
-        stack.order((d) ->
-            n = d.length
-            sums = d.map(d3_layout_stackReduceSum)
-            stackOrder = d3.range(n).sort((a, b) -> sums[b] - sums[a])
-            return stackOrder
-          )
+        stack.order(@options.stackOrder)
 
       data = stack.values(@barsDataAccessor)(new_data)
-      console.log(data)
 
-      if @options.stackOrder
-        data = stackOrder.map((x) -> data[x])
+      if @_stackOrder  # stack order was cached
+        # If you don't sort the data too, the legend will be in the wrong order.
+        data = @_stackOrder.map((x) -> data[x])
       return data
 
 
@@ -466,6 +474,8 @@ do ($=jQuery, d3=d3, exports=window) ->
 
   #
   # # Grouped Bar Chart
+  #
+
   #
   exports.D3GroupedBarChart = class D3GroupedBarChart extends D3BarChart
     # Add a custom method so `getLayers` knows how much to shift each layer by.

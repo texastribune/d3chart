@@ -365,25 +365,34 @@ var __hasProp = {}.hasOwnProperty,
       return D3StackedBarChart.__super__.constructor.apply(this, arguments);
     }
 
-    D3StackedBarChart.prototype.initData = function(new_data) {
-      var data, stack, stackOrder;
-      stack = d3.layout.stack();
-      stackOrder = void 0;
+    D3StackedBarChart.prototype.setUp = function(options) {
+      D3StackedBarChart.__super__.setUp.call(this, options);
       if (this.options.stackOrder) {
-        stack.order(function(d) {
-          var n, sums;
-          n = d.length;
-          sums = d.map(d3_layout_stackReduceSum);
-          stackOrder = d3.range(n).sort(function(a, b) {
-            return sums[b] - sums[a];
-          });
-          return stackOrder;
-        });
+        if (this.options.stackOrder === "big-bottom") {
+          this.options.stackOrder = function(d) {
+            var n, stackOrder, sums;
+            n = d.length;
+            sums = d.map(d3_layout_stackReduceSum);
+            stackOrder = d3.range(n).sort(function(a, b) {
+              return sums[b] - sums[a];
+            });
+            this._stackOrder = stackOrder;
+            return stackOrder;
+          };
+        }
+      }
+      return this;
+    };
+
+    D3StackedBarChart.prototype.initData = function(new_data) {
+      var data, stack;
+      stack = d3.layout.stack();
+      if (this.options.stackOrder) {
+        stack.order(this.options.stackOrder);
       }
       data = stack.values(this.barsDataAccessor)(new_data);
-      console.log(data);
-      if (this.options.stackOrder) {
-        data = stackOrder.map(function(x) {
+      if (this._stackOrder) {
+        data = this._stackOrder.map(function(x) {
           return data[x];
         });
       }
