@@ -80,8 +80,9 @@ do ($=jQuery, d3=d3, exports=window) ->
   d3_layout_stackReduceSum = (d) -> d.reduce(d3_layout_stackSum, 0)
   d3_layout_stackSum = (p, d) -> p + d[1]
 
-  # similar to python's any
-  any = (arr) -> arr.reduce((a, b) -> return a || b)
+  # Similar to python's any. Returns `true` if any of the elements in an
+  #   array are truthy.
+  any = (arr) -> arr.reduce((a, b) -> a || b)
 
   # # Base D3Chart class
 
