@@ -74,6 +74,14 @@ do ($=jQuery, d3=d3, exports=window) ->
         set_j.y *= factor / max_value * 100
     data;
 
+  # private functions from
+  # https://raw.github.com/mbostock/d3/master/src/layout/stack.js
+  # for re-ordering data
+  d3_layout_stackReduceSum = (d) -> d.reduce(d3_layout_stackSum, 0)
+  d3_layout_stackSum = (p, d) -> p + d[1]
+
+  # similar to python's any
+  any = (arr) -> arr.reduce((a, b) -> return a || b)
 
   # # Base D3Chart class
 
@@ -426,7 +434,23 @@ do ($=jQuery, d3=d3, exports=window) ->
     #
     initData: (new_data) ->
       # Process add stack offsets using d3's layout helper.
-      d3.layout.stack().values(@barsDataAccessor)(new_data)
+      stack = d3.layout.stack()
+      stackOrder = undefined  # HACK coffeescript puts in wrong scope
+      if @options.stackOrder
+        stack.order((d) ->
+            n = d.length
+            sums = d.map(d3_layout_stackReduceSum)
+            stackOrder = d3.range(n).sort((a, b) -> sums[b] - sums[a])
+            return stackOrder
+          )
+
+      data = stack.values(@barsDataAccessor)(new_data)
+      console.log(data)
+
+      if @options.stackOrder
+        data = stackOrder.map((x) -> data[x])
+      return data
+
 
     # We need to customize this because instead of taking `y`, we need to
     # consider `y0` too to get the total height of all the stacked bars.

@@ -3,7 +3,7 @@ var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 (function($, d3, exports) {
-  var D3BarChart, D3Chart, D3GroupedBarChart, D3StackedBarChart, defaultOptions;
+  var D3BarChart, D3Chart, D3GroupedBarChart, D3StackedBarChart, any, d3_layout_stackReduceSum, d3_layout_stackSum, defaultOptions;
   defaultOptions = {
     color: d3.scale.category10(),
     margin: {
@@ -54,6 +54,17 @@ var __hasProp = {}.hasOwnProperty,
       }
     }
     return data;
+  };
+  d3_layout_stackReduceSum = function(d) {
+    return d.reduce(d3_layout_stackSum, 0);
+  };
+  d3_layout_stackSum = function(p, d) {
+    return p + d[1];
+  };
+  any = function(arr) {
+    return arr.reduce(function(a, b) {
+      return a || b;
+    });
   };
   exports.D3Chart = D3Chart = (function() {
 
@@ -355,7 +366,28 @@ var __hasProp = {}.hasOwnProperty,
     }
 
     D3StackedBarChart.prototype.initData = function(new_data) {
-      return d3.layout.stack().values(this.barsDataAccessor)(new_data);
+      var data, stack, stackOrder;
+      stack = d3.layout.stack();
+      stackOrder = void 0;
+      if (this.options.stackOrder) {
+        stack.order(function(d) {
+          var n, sums;
+          n = d.length;
+          sums = d.map(d3_layout_stackReduceSum);
+          stackOrder = d3.range(n).sort(function(a, b) {
+            return sums[b] - sums[a];
+          });
+          return stackOrder;
+        });
+      }
+      data = stack.values(this.barsDataAccessor)(new_data);
+      console.log(data);
+      if (this.options.stackOrder) {
+        data = stackOrder.map(function(x) {
+          return data[x];
+        });
+      }
+      return data;
     };
 
     D3StackedBarChart.prototype.getMaxY = function(d) {

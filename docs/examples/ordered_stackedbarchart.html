@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Example Chart</title>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/d3.v2.js"></script>
+    <script src="../../d3chart.js"></script>
+    <style>
+      html {
+        background: #EEE;
+      }
+      #chart {
+        background: #FFF;
+        color: #222;
+        height: 500px;
+        outline: 1px solid #CCC;
+      }
+      .loading {
+        background: #333;
+      }
+      .tick {
+        stroke: #222;
+      }
+      .domain {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="chart"></div>
+    <script>
+// https://gist.github.com/3802316
+
+var data = [
+    [{x: 0, y: 0},
+     {x: 1, y: 1},
+     {x: 2, y: 2},
+     {x: 3, y: 3},
+     {x: 4, y: 4}],
+    [{x: 0, y: 2},
+     {x: 1, y: 2},
+     {x: 2, y: 2},
+     {x: 3, y: 2},
+     {x: 4, y: 2}],
+    [{x: 0, y: 1},
+     {x: 1, y: 1},
+     {x: 2, y: 1},
+     {x: 3, y: 1},
+     {x: 4, y: 1}]];
+
+var options = { stackOrder: true };
+
+var mychart = new D3StackedBarChart("chart", data, options);
+    </script>
+  </body>
+</html>
