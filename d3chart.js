@@ -3,7 +3,7 @@ var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 (function($, d3, exports) {
-  var D3BarChart, D3Chart, D3GroupedBarChart, D3StackedBarChart, any, d3_layout_stackReduceSum, d3_layout_stackSum, defaultOptions;
+  var D3BarChart, D3Chart, D3GroupedBarChart, D3StackedBarChart, D3StaggeredBarChart, any, d3_layout_stackReduceSum, d3_layout_stackSum, defaultOptions;
   defaultOptions = {
     color: d3.scale.category10(),
     margin: {
@@ -449,6 +449,42 @@ var __hasProp = {}.hasOwnProperty,
     };
 
     return D3GroupedBarChart;
+
+  })(D3BarChart);
+  exports.D3StaggeredBarChart = D3StaggeredBarChart = (function(_super) {
+
+    __extends(D3StaggeredBarChart, _super);
+
+    function D3StaggeredBarChart() {
+      return D3StaggeredBarChart.__super__.constructor.apply(this, arguments);
+    }
+
+    D3StaggeredBarChart.prototype.getLayerOffset = function(d, i) {
+      return this._barSpacing * i;
+    };
+
+    D3StaggeredBarChart.prototype.getLayers = function() {
+      var layers, self;
+      self = this;
+      layers = D3StaggeredBarChart.__super__.getLayers.call(this);
+      return layers.attr("transform", function(d, i) {
+        return "translate(" + (self.getLayerOffset(d, i)) + ", 0)";
+      });
+    };
+
+    D3StaggeredBarChart.prototype.getBarWidth = function() {
+      var bar_width;
+      bar_width = D3StaggeredBarChart.__super__.getBarWidth.call(this);
+      this._barSpacing = 0;
+      if (typeof this.options.barSpacing === "string") {
+        this._barSpacing = bar_width * parseFloat(this.options.barSpacing) / 100;
+      } else if (this.options.barSpacing) {
+        this._barSpacing = this.options.barSpacing;
+      }
+      return bar_width - this._barSpacing * this._data.length;
+    };
+
+    return D3StaggeredBarChart;
 
   })(D3BarChart);
   return "";

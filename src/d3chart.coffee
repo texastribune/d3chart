@@ -498,5 +498,45 @@ do ($=jQuery, d3=d3, exports=window) ->
       len_series = @_data.length
       bar_width / len_series
 
-  # The End
+#
+# # Staggered Bar Chart
+#
+# Very similar to a Grouped Bar Chart, but the bars overlap each other.
+#   To set up the amount of overlap, pass in the option: `barSpacing`.
+#   It can be a number or a percent.
+
+#
+  exports.D3StaggeredBarChart = class D3StaggeredBarChart extends D3BarChart
+    getLayerOffset: (d, i) -> @_barSpacing * i  # Assume `@_barSpacing` is set
+
+    # This is the same as D3GroupedBarChart's `getLayers`.
+    getLayers: () ->
+      self = this
+      layers = super()
+      layers
+        .attr("transform", (d, i) ->
+          "translate(#{self.getLayerOffset(d, i)}, 0)";
+        )
+
+    # Reduce `super`'s bar width.
+    getBarWidth: () ->
+      bar_width = super()
+
+      @_barSpacing = 0
+      if typeof @options.barSpacing == "string"  # percent "5%"
+        @_barSpacing = bar_width * parseFloat(@options.barSpacing) / 100;
+      else if @options.barSpacing
+        @_barSpacing = @options.barSpacing
+      return bar_width - @_barSpacing * @_data.length
+
+# # TODOs
+#
+# * Give D3Chart children their own defaults
+# * Allow sorting series for Grouped and Staggered Bar Charts
+# * Fix left aligned bars
+# * Better control for bar width
+# * Better handling of colors when data is an array of objects
+
+# # The End
   ""  # keep coffeescript from returning the statement above.
+
