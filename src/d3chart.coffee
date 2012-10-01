@@ -507,7 +507,10 @@ do ($=jQuery, d3=d3, exports=window) ->
 
 #
   exports.D3StaggeredBarChart = class D3StaggeredBarChart extends D3BarChart
-    getLayerOffset: (d, i) -> @_barSpacing * i  # Assume `@_barSpacing` is set
+    getLayerOffset: (d, i) ->
+      if @_staggerMode  # HACK
+        return @_staggerMode - @_barSpacing * i
+      @_barSpacing * i # Assume `@_barSpacing` is set
 
     # This is the same as D3GroupedBarChart's `getLayers`.
     getLayers: () ->
@@ -522,11 +525,15 @@ do ($=jQuery, d3=d3, exports=window) ->
     getBarWidth: () ->
       bar_width = super()
 
-      @_barSpacing = 0
+      @_barSpacing = @_staggerMode = 0
       if typeof @options.barSpacing == "string"  # percent "5%"
         @_barSpacing = bar_width * parseFloat(@options.barSpacing) / 100;
       else if @options.barSpacing
         @_barSpacing = @options.barSpacing
+      # If `barSpacing` is negative, reverse the direction of the stagger.
+      if @_barSpacing < 0
+        @_barSpacing = -@_barSpacing
+        @_staggerMode = @_barSpacing * @_data.length
       return bar_width - @_barSpacing * @_data.length
 
 # # TODOs

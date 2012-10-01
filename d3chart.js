@@ -460,6 +460,9 @@ var __hasProp = {}.hasOwnProperty,
     }
 
     D3StaggeredBarChart.prototype.getLayerOffset = function(d, i) {
+      if (this._staggerMode) {
+        return this._staggerMode - this._barSpacing * i;
+      }
       return this._barSpacing * i;
     };
 
@@ -475,11 +478,15 @@ var __hasProp = {}.hasOwnProperty,
     D3StaggeredBarChart.prototype.getBarWidth = function() {
       var bar_width;
       bar_width = D3StaggeredBarChart.__super__.getBarWidth.call(this);
-      this._barSpacing = 0;
+      this._barSpacing = this._staggerMode = 0;
       if (typeof this.options.barSpacing === "string") {
         this._barSpacing = bar_width * parseFloat(this.options.barSpacing) / 100;
       } else if (this.options.barSpacing) {
         this._barSpacing = this.options.barSpacing;
+      }
+      if (this._barSpacing < 0) {
+        this._barSpacing = -this._barSpacing;
+        this._staggerMode = this._barSpacing * this._data.length;
       }
       return bar_width - this._barSpacing * this._data.length;
     };
