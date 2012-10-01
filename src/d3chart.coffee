@@ -240,7 +240,7 @@ do ($=jQuery, d3=d3, exports=window) ->
         $('rect.bar', @svg[0]).tooltip({
           # This is wrapped so that you can change the tooltip
           # after the chart has already been initialized.
-          title: () -> self.options.tooltip.call(this)
+          title: () -> self.options.tooltip.format.call(this)
         })
 
       # Let's draw axes!

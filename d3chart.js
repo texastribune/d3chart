@@ -194,7 +194,7 @@ var __hasProp = {}.hasOwnProperty,
       if (this.options.tooltip.enabled && $.fn.tooltip) {
         $('rect.bar', this.svg[0]).tooltip({
           title: function() {
-            return self.options.tooltip.call(this);
+            return self.options.tooltip.format.call(this);
           }
         });
       }
