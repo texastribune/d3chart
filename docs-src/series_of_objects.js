@@ -5,11 +5,6 @@ var MyBarChart = (function() {
     function Custom() {
       return Custom.__super__.constructor.apply(this, arguments);
     }
-
-    Custom.prototype.barsDataAccessor = function(d) {
-      return d.values;
-    };
-
     Custom.prototype.getLayerFillStyle = function() {
       var self = this;
       return function(d, i) {
@@ -47,6 +42,9 @@ var options = {
       color: {
         "Breakfast": 'goldenrod',
         "Lunch": 'darkslategrey'
+      },
+      accessors: {
+        bars: function(d){ return d.values; }
       },
       xAxis: { enabled: true },
       yAxis: { enabled: true }

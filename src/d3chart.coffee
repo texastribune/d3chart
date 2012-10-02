@@ -216,7 +216,10 @@ do ($=jQuery, d3=d3, exports=window) ->
 
 
   # # Base Bar Chart Class
+
+  #
   exports.D3BarChart = class D3BarChart extends D3Chart
+    # ## plotSetUp: step 3
     plotSetUp: () ->
       @layerFillStyle = @getLayerFillStyle()
 
@@ -237,7 +240,7 @@ do ($=jQuery, d3=d3, exports=window) ->
       # since it is extremly rare that your bar widths vary.
       @bar_width = @getBarWidth()
 
-    # ## Render
+    # ## render: step 4
     # Extend D3Chart's `render`
     render: () ->
       super()
@@ -362,6 +365,7 @@ do ($=jQuery, d3=d3, exports=window) ->
       @yScale.domain(extent)
       return this
 
+    # ## getLayers: Process Layers/Series
     # Set up a layer for each series as a SVG group.
     getLayers: () ->
       @plot.selectAll("g.layer")
@@ -370,6 +374,7 @@ do ($=jQuery, d3=d3, exports=window) ->
           .attr("class", "layer")
           .style("fill", @layerFillStyle)
 
+    # ## getBars: Turn data into bars
     # Setup a bar for each point in a series as a SVG rect.
     getBars: () ->
       @._layers.selectAll("rect.bar")
