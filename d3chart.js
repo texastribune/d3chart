@@ -357,7 +357,7 @@ var __hasProp = {}.hasOwnProperty,
 
     D3BarChart.prototype.postRenderLegend = function(el) {
       var _ref;
-      if ((_ref = this.options.legend.postRenderLegend) != null) {
+      if ((_ref = this.options.legend.postRender) != null) {
         _ref.call(this, el);
       }
       return this;

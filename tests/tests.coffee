@@ -1,7 +1,7 @@
 
 # configuration
 FIXTURE = document.getElementById 'qunit-fixture'
-DATA = []
+DATA = [[]]
 
 $FIXTURE = $ FIXTURE
 
@@ -36,3 +36,84 @@ test "postRender is called", ->
     postRender: -> throw "poop"
   block = -> new D3Chart(FIXTURE, DATA, options)
   throws(block, "poop")
+
+
+module "D3BarChart"
+
+test "plot has same number of layers as number of series", ->
+  testChart = new D3BarChart(FIXTURE, [[], [], [], [], []])
+  equal testChart.plot.selectAll('g.layer')[0].length, 5
+
+
+$legend = null
+DATA = [[]]
+module "Legend Tests",
+  setup: ->
+    $legend = $("<div/>").appendTo($FIXTURE)
+  # teardown: ->
+  #   del $legend
+
+test "legend made", ->
+  options =
+    legend:
+      enabled: true
+      elem: $legend
+  testChart = new D3BarChart(FIXTURE, DATA, options)
+  ok testChart.legend, "Legend attribute is truthy"
+
+test "legend titleAccessor is called", ->
+  options =
+    legend:
+      enabled: true
+      elem: $legend
+      titleAccessor: -> throw "poop"
+  block = -> new D3BarChart(FIXTURE, DATA, options)
+  throws(block, "poop")
+
+test "legend postRender is called", ->
+  options =
+    legend:
+      enabled: true
+      elem: $legend
+      postRender: -> throw "poop"
+  block = -> new D3BarChart(FIXTURE, DATA, options)
+  throws(block, "poop")
+
+test "legend order is normal", ->
+  options =
+    legend:
+      enabled: true
+      elem: $legend
+  testChart = new D3BarChart(FIXTURE, [[], [], []], options)
+  equal testChart.$legend.find('.legend-value').text(), "012"
+
+test "legend color order is normal", ->
+  options =
+    legend:
+      enabled: true
+      elem: $legend
+  testChart = new D3BarChart(FIXTURE, [[], [], []], options)
+  should_be = testChart.option('color')(0)
+  actually_is = testChart.$legend.find('.legend-key:first').css('color')
+  equal d3.rgb(should_be).toString(), d3.rgb(actually_is).toString()
+
+test "legend order can be reversed", ->
+  options =
+    legend:
+      enabled: true
+      reversed: true
+      elem: $legend
+  testChart = new D3BarChart(FIXTURE, [[], [], []], options)
+  equal testChart.$legend.find('.legend-value').text(), "210"
+
+test "legend color order is reversed when order is reversed", ->
+  options =
+    legend:
+      enabled: true
+      reversed: true
+      elem: $legend
+  testChart = new D3BarChart(FIXTURE, [[], [], []], options)
+  should_be = testChart.option('color')(2)
+  actually_is = testChart.$legend.find('.legend-key:first').css('color')
+  equal d3.rgb(should_be).toString(), d3.rgb(actually_is).toString()
+

@@ -437,7 +437,7 @@ do ($=jQuery, d3=d3, exports=window) ->
     # If you want to customize the legend, it may be easier to alter the legend
     # created by `renderLegend` instead of making your own.
     postRenderLegend: (el) ->
-      @options.legend.postRenderLegend?.call(@, el);
+      @options.legend.postRender?.call(this, el);
       return this
 
   #
