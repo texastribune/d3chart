@@ -109,7 +109,7 @@ var __hasProp = {}.hasOwnProperty,
 
     D3Chart.prototype.main = function(data, options) {
       this.setUp(options);
-      this._data = this.initData(data);
+      this._data = this.getCleanData(data);
       this.plotSetUp();
       this.render();
       return this.postRender();
@@ -130,7 +130,7 @@ var __hasProp = {}.hasOwnProperty,
       return this.$elem.addClass("loading");
     };
 
-    D3Chart.prototype.initData = function(data) {
+    D3Chart.prototype.getCleanData = function(data) {
       return data;
     };
 
@@ -151,7 +151,7 @@ var __hasProp = {}.hasOwnProperty,
 
     D3Chart.prototype.data = function(new_data) {
       if (new_data != null) {
-        this._data = this.initData(new_data);
+        this._data = this.getCleanData(new_data);
         this.refresh();
         return this;
       }
@@ -403,7 +403,7 @@ var __hasProp = {}.hasOwnProperty,
       return this;
     };
 
-    D3StackedBarChart.prototype.initData = function(new_data) {
+    D3StackedBarChart.prototype.getCleanData = function(new_data) {
       var data, stack;
       stack = d3.layout.stack();
       if (this._options.stackOrder) {

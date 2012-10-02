@@ -155,7 +155,7 @@ do ($=jQuery, d3=d3, exports=window) ->
     # The main execution path looks like this:
     main: (data, options) ->
       @setUp options
-      @_data = @initData data
+      @_data = @getCleanData data
       @plotSetUp()
       @render()
       @postRender()
@@ -191,8 +191,8 @@ do ($=jQuery, d3=d3, exports=window) ->
     # ## Step 2: cleaning data
     # d3 expects data in a certain format, which is probably different from
     # how your data comes in. You can put any logic you need to transform
-    # your data in `initData`
-    initData: (data) -> data
+    # your data in `getCleanData`
+    getCleanData: (data) -> data
 
     # ## Step 3: set up accessors
     plotSetUp: (data) -> data
@@ -226,10 +226,10 @@ do ($=jQuery, d3=d3, exports=window) ->
     # Get or set data.
     data: (new_data) ->
       if new_data?
-        @_data = @initData(new_data)
+        @_data = @getCleanData(new_data)
         @refresh()
         return this
-      @_data
+      return @_data
 
     # Get or set option.
     option: (name, newvalue) ->
@@ -498,7 +498,7 @@ do ($=jQuery, d3=d3, exports=window) ->
       return this
 
     #
-    initData: (new_data) ->
+    getCleanData: (new_data) ->
       # Process add stack offsets using d3's layout helper.
       stack = d3.layout.stack()
       if @_options.stackOrder
