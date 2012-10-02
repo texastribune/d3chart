@@ -24,6 +24,12 @@ do ($=jQuery, d3=d3, exports=window) ->
       right: 0
       bottom: 30
       left: 50
+
+    # You can define custom accessors to match the input data
+    accessors:
+      # How to get bar data from the layer data
+      bars: (d) -> d
+
     # Tooltips currently rely on a version bootstrap's tooltips hacked to
     # work with SVG.
     # TODO: make this logic look more like d3 and allow different tooltip
@@ -148,6 +154,9 @@ do ($=jQuery, d3=d3, exports=window) ->
       @options.plotBox =
         width: @options.width - @options.margin.left - @options.margin.right
         height: @options.height - @options.margin.top - @options.margin.bottom
+
+      # cache bar data accessor
+      @_barsDataAccessor = @options.accessors.bars
 
       # Indicate the current state by adding the "loading" class to the container.
       @$elem.addClass "loading"
@@ -300,7 +309,7 @@ do ($=jQuery, d3=d3, exports=window) ->
     # Get the appropriate [d3 ordinal scale](https://github.com/mbostock/d3/wiki/Ordinal-Scales#wiki-ordinal)
     # for the data.
     getXScale: () ->
-      d = @_data.map(@barsDataAccessor)
+      d = @_data.map(@_barsDataAccessor)
       min_x = d3.min(d, (d) -> d3.min(d, (d) -> d.x))
       max_x = d3.max(d, (d) -> d3.max(d, (d) -> d.x))
       return d3.scale.ordinal()
@@ -323,7 +332,7 @@ do ($=jQuery, d3=d3, exports=window) ->
 
     # Function for how to find the the largest value for `y` in the data.
     getMaxY: (d) ->
-      _d = d.map(@barsDataAccessor)
+      _d = d.map(@_barsDataAccessor)
       d3.max(_d, (d) -> d3.max(d, (d) -> d.y))
 
     # Return a function that decides how to color the bars based on the layer.
@@ -361,15 +370,10 @@ do ($=jQuery, d3=d3, exports=window) ->
           .attr("class", "layer")
           .style("fill", @layerFillStyle)
 
-    # How to extract bar data from the layer
-    #
-    # TODO: should this be an option?
-    barsDataAccessor: (d) -> d
-
     # Setup a bar for each point in a series as a SVG rect.
     getBars: () ->
       @._layers.selectAll("rect.bar")
-        .data(@barsDataAccessor)
+        .data(@_barsDataAccessor)
         .enter().append("rect")
           .attr("class", "bar")
           .attr("width", @bar_width * 0.9)
@@ -466,7 +470,7 @@ do ($=jQuery, d3=d3, exports=window) ->
       if @options.stackOrder
         stack.order(@options.stackOrder)
 
-      data = stack.values(@barsDataAccessor)(new_data)
+      data = stack.values(@_barsDataAccessor)(new_data)
 
       if @_stackOrder  # stack order was cached
         # If you don't sort the data too, the legend will be in the wrong order.
@@ -477,7 +481,7 @@ do ($=jQuery, d3=d3, exports=window) ->
     # We need to customize this because instead of taking `y`, we need to
     # consider `y0` too to get the total height of all the stacked bars.
     getMaxY: (d) ->
-      _d = d.map(@barsDataAccessor)
+      _d = d.map(@_barsDataAccessor)
       d3.max(_d, (d) -> d3.max(d, (d) -> d.y + d.y0))
 
     # We need to offset `y` by `y0` when drawing the bars.

@@ -63,6 +63,138 @@
     return equal(testChart.plot.selectAll('g.layer')[0].length, 5);
   });
 
+  test("plot y extents go from 0 to max value of y", function() {
+    var data, testChart;
+    data = [
+      [
+        {
+          x: 0,
+          y: 1
+        }, {
+          x: 1,
+          y: 2000
+        }
+      ], [
+        {
+          x: 0,
+          y: 100
+        }, {
+          x: 1,
+          y: 20000
+        }
+      ]
+    ];
+    testChart = new D3BarChart(FIXTURE, data);
+    equal(testChart.yScale.domain()[0], 0);
+    return equal(testChart.yScale.domain()[1], 20000);
+  });
+
+  test("plot y extents are found and correct with a custom data accessor", function() {
+    var data, options, testChart;
+    data = [
+      {
+        values: [
+          {
+            x: 0,
+            y: 1
+          }, {
+            x: 1,
+            y: 2000
+          }
+        ]
+      }, {
+        values: [
+          {
+            x: 0,
+            y: 100
+          }, {
+            x: 1,
+            y: 20000
+          }
+        ]
+      }
+    ];
+    options = {
+      accessors: {
+        bars: function(d) {
+          return d.values;
+        }
+      }
+    };
+    testChart = new D3BarChart(FIXTURE, data, options);
+    equal(testChart.yScale.domain()[0], 0);
+    return equal(testChart.yScale.domain()[1], 20000);
+  });
+
+  test("plot y min can be set based on options.yAxis.min", function() {
+    var data, options, testChart;
+    data = [
+      [
+        {
+          x: 0,
+          y: 1
+        }, {
+          x: 1,
+          y: 20
+        }
+      ]
+    ];
+    options = {
+      yAxis: {
+        min: 10
+      }
+    };
+    testChart = new D3BarChart(FIXTURE, data, options);
+    equal(testChart.yScale.domain()[0], options.yAxis.min);
+    return equal(testChart.yScale.domain()[1], 20);
+  });
+
+  test("plot y max can be set based on options.yAxis.max", function() {
+    var data, options, testChart;
+    data = [
+      [
+        {
+          x: 0,
+          y: 1
+        }, {
+          x: 1,
+          y: 20
+        }
+      ]
+    ];
+    options = {
+      yAxis: {
+        max: 100
+      }
+    };
+    testChart = new D3BarChart(FIXTURE, data, options);
+    equal(testChart.yScale.domain()[0], 0);
+    return equal(testChart.yScale.domain()[1], options.yAxis.max);
+  });
+
+  test("plot y max can be set based on options.yAxis.max even if it is smaller than the max", function() {
+    var data, options, testChart;
+    data = [
+      [
+        {
+          x: 0,
+          y: 1
+        }, {
+          x: 1,
+          y: 20000
+        }
+      ]
+    ];
+    options = {
+      yAxis: {
+        max: 100
+      }
+    };
+    testChart = new D3BarChart(FIXTURE, data, options);
+    equal(testChart.yScale.domain()[0], 0);
+    return equal(testChart.yScale.domain()[1], options.yAxis.max);
+  });
+
   $legend = null;
 
   DATA = [[]];

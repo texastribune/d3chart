@@ -5,8 +5,10 @@ DATA = [[]]
 
 $FIXTURE = $ FIXTURE
 
-module "D3Chart"
 
+
+
+module "D3Chart"
 
 test "SVG element created", ->
   testChart = new D3Chart(FIXTURE, DATA)
@@ -38,11 +40,83 @@ test "postRender is called", ->
   throws(block, "poop")
 
 
+
+
 module "D3BarChart"
 
 test "plot has same number of layers as number of series", ->
   testChart = new D3BarChart(FIXTURE, [[], [], [], [], []])
   equal testChart.plot.selectAll('g.layer')[0].length, 5
+
+test "plot y extents go from 0 to max value of y", ->
+  data = [[
+      {x: 0, y: 1}
+      {x: 1, y: 2000}
+    ]
+    [
+      {x: 0, y: 100}
+      {x: 1, y: 20000}
+    ]
+  ]
+  testChart = new D3BarChart(FIXTURE, data)
+  equal testChart.yScale.domain()[0], 0
+  equal testChart.yScale.domain()[1], 20000
+
+test "plot y extents are found and correct with a custom data accessor", ->
+  data = [
+    {values: [
+      {x: 0, y: 1}
+      {x: 1, y: 2000}
+    ]}
+    {values: [
+      {x: 0, y: 100}
+      {x: 1, y: 20000}
+    ]}
+  ]
+  options =
+    accessors:
+      bars: (d) -> d.values
+  testChart = new D3BarChart(FIXTURE, data, options)
+  equal testChart.yScale.domain()[0], 0
+  equal testChart.yScale.domain()[1], 20000
+
+test "plot y min can be set based on options.yAxis.min", ->
+  data = [[
+    {x: 0, y: 1}
+    {x: 1, y: 20}
+  ]]
+  options =
+    yAxis:
+      min: 10
+  testChart = new D3BarChart(FIXTURE, data, options)
+  equal testChart.yScale.domain()[0], options.yAxis.min
+  equal testChart.yScale.domain()[1], 20
+
+test "plot y max can be set based on options.yAxis.max", ->
+  data = [[
+    {x: 0, y: 1}
+    {x: 1, y: 20}
+  ]]
+  options =
+    yAxis:
+      max: 100
+  testChart = new D3BarChart(FIXTURE, data, options)
+  equal testChart.yScale.domain()[0], 0  # bar charts start at 0
+  equal testChart.yScale.domain()[1], options.yAxis.max
+
+test "plot y max can be set based on options.yAxis.max even if it is smaller than the max", ->
+  data = [[
+    {x: 0, y: 1}
+    {x: 1, y: 20000}
+  ]]
+  options =
+    yAxis:
+      max: 100
+  testChart = new D3BarChart(FIXTURE, data, options)
+  equal testChart.yScale.domain()[0], 0  # bar charts start at 0
+  equal testChart.yScale.domain()[1], options.yAxis.max
+
+
 
 
 $legend = null
