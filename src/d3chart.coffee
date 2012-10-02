@@ -122,7 +122,7 @@ do ($=jQuery, d3=d3, exports=window) ->
       if (typeof data == "string")  # if data is url
         self = this
         d3.json(data, (new_data) ->
-          self.main.call(self, data options)
+          self.main.call(self, new_data, options)
         )
       else
         @main(data, options)

@@ -97,7 +97,7 @@ var __hasProp = {}.hasOwnProperty,
       if (typeof data === "string") {
         self = this;
         d3.json(data, function(new_data) {
-          return self.main.call(self, data(options));
+          return self.main.call(self, new_data, options);
         });
       } else {
         this.main(data, options);
