@@ -128,14 +128,14 @@ test "fill color can be obtained via an accesor", ->
     ], name: "bar"}
   ]
   options =
-    color:
+    colors:
       foo: "#ff0000"
       bar: "#00ff00"
     accessors:
       bars: (d) -> d.values
       colors: (d) -> d.name
   testChart = new D3BarChart(FIXTURE, data, options)
-  equal testChart.plot.select('g.layer').style('fill'), options.color[data[0].name]
+  equal testChart.plot.select('g.layer').style('fill'), options.colors[data[0].name]
 
 $legend = null
 DATA = [[]]
@@ -185,7 +185,7 @@ test "legend color order is normal", ->
       enabled: true
       elem: $legend
   testChart = new D3BarChart(FIXTURE, [[], [], []], options)
-  should_be = testChart.option('color')(0)
+  should_be = testChart.option('colors')(0)
   actually_is = testChart.$legend.find('.legend-key:first').css('color')
   equal d3.rgb(should_be).toString(), d3.rgb(actually_is).toString()
 
@@ -205,7 +205,7 @@ test "legend color order is reversed when order is reversed", ->
       reversed: true
       elem: $legend
   testChart = new D3BarChart(FIXTURE, [[], [], []], options)
-  should_be = testChart.option('color')(2)
+  should_be = testChart.option('colors')(2)
   actually_is = testChart.$legend.find('.legend-key:first').css('color')
   equal d3.rgb(should_be).toString(), d3.rgb(actually_is).toString()
 

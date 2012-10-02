@@ -21,7 +21,7 @@ var data = [
     ];
 
 var options = {
-      color: {
+      colors: {
         "Breakfast": 'goldenrod',
         "Lunch": 'darkslategrey'
       },

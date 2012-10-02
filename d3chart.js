@@ -5,7 +5,7 @@ var __hasProp = {}.hasOwnProperty,
 (function($, d3, exports) {
   var D3BarChart, D3Chart, D3GroupedBarChart, D3StackedBarChart, D3StaggeredBarChart, any, d3_layout_stackReduceSum, d3_layout_stackSum, defaultOptions;
   defaultOptions = {
-    color: d3.scale.category10(),
+    colors: d3.scale.category10(),
     margin: {
       top: 10,
       right: 0,
@@ -117,8 +117,8 @@ var __hasProp = {}.hasOwnProperty,
       defaultOptions.height = this.$elem.height();
       defaultOptions.width = this.$elem.width();
       this.options = $.extend(true, {}, defaultOptions, options || {});
-      if ($.isArray(this.options.color)) {
-        this.options.color = d3.scale.ordinal().range(this.options.color);
+      if ($.isArray(this.options.colors)) {
+        this.options.colors = d3.scale.ordinal().range(this.options.colors);
       }
       this.options.plotBox = {
         width: this.options.width - this.options.margin.left - this.options.margin.right,
@@ -278,11 +278,11 @@ var __hasProp = {}.hasOwnProperty,
       opts = this.options;
       if (opts.accessors.colors != null) {
         return function(d, i) {
-          return opts.color[opts.accessors.colors(d, i)];
+          return opts.colors[opts.accessors.colors(d, i)];
         };
       }
       return function(d, i) {
-        return opts.color(i);
+        return opts.colors(i);
       };
     };
 

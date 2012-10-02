@@ -223,7 +223,7 @@
       }
     ];
     options = {
-      color: {
+      colors: {
         foo: "#ff0000",
         bar: "#00ff00"
       },
@@ -237,7 +237,7 @@
       }
     };
     testChart = new D3BarChart(FIXTURE, data, options);
-    return equal(testChart.plot.select('g.layer').style('fill'), options.color[data[0].name]);
+    return equal(testChart.plot.select('g.layer').style('fill'), options.colors[data[0].name]);
   });
 
   $legend = null;
@@ -317,7 +317,7 @@
       }
     };
     testChart = new D3BarChart(FIXTURE, [[], [], []], options);
-    should_be = testChart.option('color')(0);
+    should_be = testChart.option('colors')(0);
     actually_is = testChart.$legend.find('.legend-key:first').css('color');
     return equal(d3.rgb(should_be).toString(), d3.rgb(actually_is).toString());
   });
@@ -345,7 +345,7 @@
       }
     };
     testChart = new D3BarChart(FIXTURE, [[], [], []], options);
-    should_be = testChart.option('color')(2);
+    should_be = testChart.option('colors')(2);
     actually_is = testChart.$legend.find('.legend-key:first').css('color');
     return equal(d3.rgb(should_be).toString(), d3.rgb(actually_is).toString());
   });

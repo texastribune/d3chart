@@ -16,7 +16,7 @@ do ($=jQuery, d3=d3, exports=window) ->
     # `['#000', '#333', '#c3c', '#3cc']`.
     # If you need more, like reading colors from a hash, you can override
     # `getLayerFillStyle` to get that functionality.
-    color: d3.scale.category10()
+    colors: d3.scale.category10()
     # Margin is space between the edge of the plot and the containing element.
     # TODO: this is really more like padding, and needs to play with axes better.
     margin:
@@ -149,8 +149,8 @@ do ($=jQuery, d3=d3, exports=window) ->
       @options = $.extend(true, {}, defaultOptions, options || {})
 
       # Allow an array of hex values for convenience.
-      if $.isArray(@options.color)
-        @options.color = d3.scale.ordinal().range(@options.color)
+      if $.isArray(@options.colors)
+        @options.colors = d3.scale.ordinal().range(@options.colors)
 
       # Pre-calculate plot box dimensions.
       @options.plotBox =
@@ -344,8 +344,8 @@ do ($=jQuery, d3=d3, exports=window) ->
     getLayerFillStyle: ->
       opts = @options
       if opts.accessors.colors?
-        return (d, i) -> opts.color[opts.accessors.colors(d, i)]
-      return (d, i) -> opts.color(i)
+        return (d, i) -> opts.colors[opts.accessors.colors(d, i)]
+      return (d, i) -> opts.colors(i)
 
     # How to get the attribute of the data element into `xScale`.
     getX: () ->
