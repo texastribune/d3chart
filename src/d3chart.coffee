@@ -466,12 +466,13 @@ do ($=jQuery, d3=d3, exports=window) ->
 
     setUp: (options) ->
       super(options)
+      self = this
       if @options.stackOrder == "big-bottom"
         @options.stackOrder = (d) ->
           n = d.length
           sums = d.map(d3_layout_stackReduceSum)
           stackOrder = d3.range(n).sort((a, b) -> sums[b] - sums[a])
-          @_stackOrder = stackOrder  # hold onto this order for later
+          self._stackOrder = stackOrder  # hold onto this order for later
           return stackOrder
       return this
 
@@ -481,7 +482,6 @@ do ($=jQuery, d3=d3, exports=window) ->
       stack = d3.layout.stack()
       if @options.stackOrder
         stack.order(@options.stackOrder)
-        console.log("stackOrder, need to restack?", @_stackOrder)
       if @options.accessors.x
         stack.x(@options.accessors.x)
       if @options.accessors.y

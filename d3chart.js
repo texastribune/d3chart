@@ -385,7 +385,9 @@ var __hasProp = {}.hasOwnProperty,
     }
 
     D3StackedBarChart.prototype.setUp = function(options) {
+      var self;
       D3StackedBarChart.__super__.setUp.call(this, options);
+      self = this;
       if (this.options.stackOrder === "big-bottom") {
         this.options.stackOrder = function(d) {
           var n, stackOrder, sums;
@@ -394,7 +396,7 @@ var __hasProp = {}.hasOwnProperty,
           stackOrder = d3.range(n).sort(function(a, b) {
             return sums[b] - sums[a];
           });
-          this._stackOrder = stackOrder;
+          self._stackOrder = stackOrder;
           return stackOrder;
         };
       }
@@ -406,7 +408,6 @@ var __hasProp = {}.hasOwnProperty,
       stack = d3.layout.stack();
       if (this.options.stackOrder) {
         stack.order(this.options.stackOrder);
-        console.log("stackOrder, need to restack?", this._stackOrder);
       }
       if (this.options.accessors.x) {
         stack.x(this.options.accessors.x);
