@@ -239,7 +239,7 @@ do ($=jQuery, d3=d3, exports=window) ->
       @_options[name]
 
     # Refresh.
-    refresh: () -> @  # PASS
+    refresh: -> @  # PASS
 
 
   # # Base Bar Chart Class
@@ -247,7 +247,7 @@ do ($=jQuery, d3=d3, exports=window) ->
   #
   exports.D3BarChart = class D3BarChart extends D3Chart
     # ## plotSetUp: step 3
-    plotSetUp: () ->
+    plotSetUp: ->
       @layerFillStyle = @getLayerFillStyle()
 
       # Setup x scale.
@@ -269,7 +269,7 @@ do ($=jQuery, d3=d3, exports=window) ->
 
     # ## render: step 4
     # Extend D3Chart's `render`
-    render: () ->
+    render: ->
       super()
 
       self = this
@@ -282,7 +282,7 @@ do ($=jQuery, d3=d3, exports=window) ->
         $('rect.bar', @svg[0]).tooltip({
           # This is wrapped so that you can change the tooltip
           # after the chart has already been initialized.
-          title: () -> self.options.tooltip.format.call(this)
+          title: -> self.options.tooltip.format.call(this)
         })
 
       # Let's draw axes!
@@ -317,7 +317,7 @@ do ($=jQuery, d3=d3, exports=window) ->
 
     # ## Refresh
     # This is a stripped down version of `render()` that only re-draws.
-    refresh: () ->
+    refresh: ->
       # reset height ceiling
       @rescale(@getYDomain())
 
@@ -338,7 +338,7 @@ do ($=jQuery, d3=d3, exports=window) ->
 
     # Get the appropriate [d3 ordinal scale](https://github.com/mbostock/d3/wiki/Ordinal-Scales#wiki-ordinal)
     # for the data.
-    getXScale: () ->
+    getXScale: ->
       d = @_data.map(@_barsDataAccessor)
       min_x = d3.min(d, (d) -> d3.min(d, (d) -> d.x))
       max_x = d3.max(d, (d) -> d3.max(d, (d) -> d.x))
@@ -350,11 +350,11 @@ do ($=jQuery, d3=d3, exports=window) ->
     # so there's no need to a @getMinY. If you don't want an automatic
     # y scale, you can do something like:
     #
-    #     getYDomain: () -> [0, 10000]
+    #     getYDomain: -> [0, 10000]
     #
     # or
     #
-    #     getMaxY: () -> 10000
+    #     getMaxY: -> 10000
     getYDomain: ->
       min = if @_options.yAxis.min? then @_options.yAxis.min else 0
       max = if @_options.yAxis.max? then @_options.yAxis.max else @getMaxY(@_data)
@@ -373,17 +373,17 @@ do ($=jQuery, d3=d3, exports=window) ->
       return (d, i) -> opts.colors(i)
 
     # How to get the attribute of the data element into `xScale`.
-    getX: () ->
+    getX: ->
       self = this
       return (d) -> self.xScale(d.x)
 
     # How to get the attribute of the data element into `yScale`.
-    getY: () ->
+    getY: ->
       self = this
       return (d) -> self.yScale(d.y)
 
     # How to get the attribute of the data element into `hScale`.
-    getH: () ->
+    getH: ->
       self = this
       return (d) -> self.hScale(d.y)
 
@@ -396,7 +396,7 @@ do ($=jQuery, d3=d3, exports=window) ->
 
     # ## getLayers: Process Layers/Series
     # Set up a layer for each series as a SVG group.
-    getLayers: () ->
+    getLayers: ->
       @plot.selectAll("g.layer")
         .data(@_data)
         .enter().append("g")
@@ -405,7 +405,7 @@ do ($=jQuery, d3=d3, exports=window) ->
 
     # ## getBars: Turn data into bars
     # Setup a bar for each point in a series as a SVG rect.
-    getBars: () ->
+    getBars: ->
       @._layers.selectAll("rect.bar")
         .data(@_barsDataAccessor)
         .enter().append("rect")
@@ -420,7 +420,7 @@ do ($=jQuery, d3=d3, exports=window) ->
             .attr("height", @h)  # final height of the bar
 
     # Bar_width is an outer width, so it's actually more like bar space.
-    getBarWidth: () ->
+    getBarWidth: ->
       len_x = @xScale.range().length;
       @_options.plotBox.width / len_x;
 
@@ -481,6 +481,18 @@ do ($=jQuery, d3=d3, exports=window) ->
   #
   # # Stacked Bar Chart
   #
+  #
+  # Special Options:
+  #
+  # * `stackOrder`: Function or String <https://github.com/mbostock/d3/wiki/Stack-Layout#wiki-order>
+  #   * inside-out - sort by index of maximum value, then use balanced weighting.
+  #   * reverse - reverse the input layer order.
+  #   * default - use the input layer order.
+  #   * big-bottom - largest on the bottom. _Custom, not in D3._
+  #
+  # Special Properties:
+  #
+  # * `_stackOrder`
 
   #
   exports.D3StackedBarChart = class D3StackedBarChart extends D3BarChart
@@ -493,7 +505,7 @@ do ($=jQuery, d3=d3, exports=window) ->
           n = d.length
           sums = d.map(d3_layout_stackReduceSum)
           stackOrder = d3.range(n).sort((a, b) -> sums[b] - sums[a])
-          self._stackOrder = stackOrder  # hold onto this order for later
+          self._stackOrder = stackOrder  # cache this for later
           return stackOrder
       return this
 
@@ -524,7 +536,7 @@ do ($=jQuery, d3=d3, exports=window) ->
       d3.max(_d, (d) -> d3.max(d, (d) -> d.y + d.y0))
 
     # We need to offset `y` by `y0` when drawing the bars.
-    getY: () ->
+    getY: ->
       self = this
       (d) -> self.yScale(d.y + d.y0)
 
@@ -539,7 +551,7 @@ do ($=jQuery, d3=d3, exports=window) ->
     getLayerOffset: (d, i) -> @bar_width * 0.9 * i
 
     # Shift each series so the bars are adjacent to each other.
-    getLayers: () ->
+    getLayers: ->
       self = this
       layers = super()
       layers
@@ -549,19 +561,26 @@ do ($=jQuery, d3=d3, exports=window) ->
 
     # Sub-divide the bar width by the number of series so we can fit multiple
     # bars into the same space.
-    getBarWidth: () ->
+    getBarWidth: ->
       bar_width = super()
       len_series = @_data.length
       bar_width / len_series
 
-#
-# # Staggered Bar Chart
-#
-# Very similar to a Grouped Bar Chart, but the bars overlap each other.
-#   To set up the amount of overlap, pass in the option: `barSpacing`.
-#   It can be a number or a percent.
+  #
+  # # Staggered Bar Chart
+  #
+  # Very similar to a Grouped Bar Chart, but the bars overlap each other.
+  #
+  # Special Options:
+  #
+  # * `barSpacing`: Number or Percent  # "10%"
+  #
+  # Special Properties:
+  #
+  # * `_barSpacing`
+  # * `_staggerMode`
 
-#
+  #
   exports.D3StaggeredBarChart = class D3StaggeredBarChart extends D3BarChart
     getLayerOffset: (d, i) ->
       if @_staggerMode  # HACK
@@ -569,7 +588,7 @@ do ($=jQuery, d3=d3, exports=window) ->
       @_barSpacing * i # Assume `@_barSpacing` is set
 
     # This is the same as D3GroupedBarChart's `getLayers`.
-    getLayers: () ->
+    getLayers: ->
       self = this
       layers = super()
       layers
@@ -578,7 +597,7 @@ do ($=jQuery, d3=d3, exports=window) ->
         )
 
     # Reduce `super`'s bar width.
-    getBarWidth: () ->
+    getBarWidth: ->
       bar_width = super()
 
       @_barSpacing = @_staggerMode = 0

@@ -298,7 +298,23 @@ Use <code>null</code> to make <code>d3.insert</code> behave like <code>d3.append
       <span class="k">return</span> <span class="k">this</span></pre></div>             </td>           </tr>                               <tr id="section-72">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-72">&#182;</a>               </div>               <p>If you want to customize the legend, it may be easier to alter the legend
 created by <code>renderLegend</code> instead of making your own.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">postRenderLegend: </span><span class="nf">(el) -&gt;</span>
       <span class="nx">@_options</span><span class="p">.</span><span class="nx">legend</span><span class="p">.</span><span class="nx">postRender</span><span class="o">?</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">el</span><span class="p">);</span>
-      <span class="k">return</span> <span class="k">this</span></pre></div>             </td>           </tr>                               <tr id="section-73">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-73">&#182;</a>               </div>               <h1>Stacked Bar Chart</h1>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-74">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-74">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">exports.D3StackedBarChart = </span><span class="k">class</span> <span class="nx">D3StackedBarChart</span> <span class="k">extends</span> <span class="nx">D3BarChart</span>
+      <span class="k">return</span> <span class="k">this</span></pre></div>             </td>           </tr>                               <tr id="section-73">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-73">&#182;</a>               </div>               <h1>Stacked Bar Chart</h1>
+
+<p>Special Options:</p>
+
+<ul>
+<li><code>stackOrder</code>: Function or String <a href="https://github.com/mbostock/d3/wiki/Stack-Layout#wiki-order">https://github.com/mbostock/d3/wiki/Stack-Layout#wiki-order</a>
+<ul><li>inside-out - sort by index of maximum value, then use balanced weighting.</li>
+<li>reverse - reverse the input layer order.</li>
+<li>default - use the input layer order.</li>
+<li>big-bottom - largest on the bottom. <em>Custom, not in D3.</em></li></ul></li>
+</ul>
+
+<p>Special Properties:</p>
+
+<ul>
+<li><code>_stackOrder</code></li>
+</ul>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-74">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-74">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">exports.D3StackedBarChart = </span><span class="k">class</span> <span class="nx">D3StackedBarChart</span> <span class="k">extends</span> <span class="nx">D3BarChart</span>
 
     <span class="nv">setUp: </span><span class="nf">(options) -&gt;</span>
       <span class="k">super</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span>
@@ -308,7 +324,7 @@ created by <code>renderLegend</code> instead of making your own.</p>            
           <span class="nv">n = </span><span class="nx">d</span><span class="p">.</span><span class="nx">length</span>
           <span class="nv">sums = </span><span class="nx">d</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">d3_layout_stackReduceSum</span><span class="p">)</span>
           <span class="nv">stackOrder = </span><span class="nx">d3</span><span class="p">.</span><span class="nx">range</span><span class="p">(</span><span class="nx">n</span><span class="p">).</span><span class="nx">sort</span><span class="p">(</span><span class="nf">(a, b) -&gt;</span> <span class="nx">sums</span><span class="p">[</span><span class="nx">b</span><span class="p">]</span> <span class="o">-</span> <span class="nx">sums</span><span class="p">[</span><span class="nx">a</span><span class="p">])</span>
-          <span class="nv">self._stackOrder = </span><span class="nx">stackOrder</span>  <span class="c1"># hold onto this order for later</span>
+          <span class="nv">self._stackOrder = </span><span class="nx">stackOrder</span>  <span class="c1"># cache this for later</span>
           <span class="k">return</span> <span class="nx">stackOrder</span>
       <span class="k">return</span> <span class="k">this</span></pre></div>             </td>           </tr>                               <tr id="section-75">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-75">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">getCleanData: </span><span class="nf">(new_data) -&gt;</span></pre></div>             </td>           </tr>                               <tr id="section-76">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-76">&#182;</a>               </div>               <p>Process add stack offsets using d3's layout helper.</p>             </td>             <td class="code">               <div class="highlight"><pre>      <span class="nv">stack = </span><span class="nx">d3</span><span class="p">.</span><span class="nx">layout</span><span class="p">.</span><span class="nx">stack</span><span class="p">()</span>
       <span class="k">if</span> <span class="nx">@_options</span><span class="p">.</span><span class="nx">stackOrder</span>
@@ -339,9 +355,20 @@ bars into the same space.</p>             </td>             <td class="code">   
       <span class="nv">len_series = </span><span class="nx">@_data</span><span class="p">.</span><span class="nx">length</span>
       <span class="nx">bar_width</span> <span class="o">/</span> <span class="nx">len_series</span></pre></div>             </td>           </tr>                               <tr id="section-85">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-85">&#182;</a>               </div>               <h1>Staggered Bar Chart</h1>
 
-<p>Very similar to a Grouped Bar Chart, but the bars overlap each other.
-  To set up the amount of overlap, pass in the option: <code>barSpacing</code>.
-  It can be a number or a percent.</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-86">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-86">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">exports.D3StaggeredBarChart = </span><span class="k">class</span> <span class="nx">D3StaggeredBarChart</span> <span class="k">extends</span> <span class="nx">D3BarChart</span>
+<p>Very similar to a Grouped Bar Chart, but the bars overlap each other.</p>
+
+<p>Special Options:</p>
+
+<ul>
+<li><code>barSpacing</code>: Number or Percent  # "10%"</li>
+</ul>
+
+<p>Special Properties:</p>
+
+<ul>
+<li><code>_barSpacing</code></li>
+<li><code>_staggerMode</code></li>
+</ul>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-86">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-86">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">exports.D3StaggeredBarChart = </span><span class="k">class</span> <span class="nx">D3StaggeredBarChart</span> <span class="k">extends</span> <span class="nx">D3BarChart</span>
     <span class="nv">getLayerOffset: </span><span class="nf">(d, i) -&gt;</span>
       <span class="k">if</span> <span class="nx">@_staggerMode</span>  <span class="c1"># HACK</span>
         <span class="k">return</span> <span class="nx">@_staggerMode</span> <span class="o">-</span> <span class="nx">@_barSpacing</span> <span class="o">*</span> <span class="nx">i</span>
