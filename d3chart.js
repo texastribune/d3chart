@@ -42,7 +42,7 @@ var __hasProp = {}.hasOwnProperty,
     },
     legend: {
       enabled: false,
-      element: void 0,
+      elem: void 0,
       reversed: false,
       titleAccessor: void 0,
       click: void 0,

@@ -12,10 +12,21 @@ do ($=jQuery, d3=d3, exports=window) ->
   # These are the default options that get overriden when initialized.
   defaultOptions =
     # By default, any colors needed will be taken from `d3.scale.category10()`.
-    # For convenience, you can also pass in an array of values like:
-    # `['#000', '#333', '#c3c', '#3cc']`.
-    # If you need more, like reading colors from a hash, you can override
-    # `getLayerFillStyle` to get that functionality.
+    #   For convenience, you can also pass in an array of values like:
+    #   `['#000', '#333', '#c3c', '#3cc']`.
+    #   The common case of using an object to read colors based on the data
+    #   is handled like this:
+    #
+    #     data = [{key: 'foo', values: ...}, {key: 'bar', value: ...}];
+    #     options = {
+    #       colors: {foo: '#f00', bar: '#0f0'},
+    #       accessors: {
+    #         bars: function(d) { return d.values; },
+    #         colors: function(d) { return d.key; }
+    #       }
+    #     };
+    #
+    #   If you need more functionality, you can override `getLayerFillStyle`.
     colors: d3.scale.category10()
     # Margin is space between the edge of the plot and the containing element.
     # TODO: this is really more like padding, and needs to play with axes better.
@@ -34,8 +45,9 @@ do ($=jQuery, d3=d3, exports=window) ->
       # How to read y-values from the data
       y: undefined  #  (d) -> d.y  TODO: only partially implemented
       # If you set a color accessor, your color above should be an Object
-      colors: undefined  # (d, i) -> Color
+      colors: undefined  # (d, i) -> String
 
+    # ## Tooltips
     # Tooltips currently rely on a version bootstrap's tooltips hacked to
     # work with SVG.
     # TODO: make this logic look more like d3 and allow different tooltip
@@ -45,6 +57,8 @@ do ($=jQuery, d3=d3, exports=window) ->
       format: ->
         d = @__data__
         d.title || d.y
+
+    # ## X Axis
     # Control the display of the x-axis.
     # If you need a custom format, specify it like:
     #
@@ -52,35 +66,41 @@ do ($=jQuery, d3=d3, exports=window) ->
     xAxis:
       enabled: false
       title: ""
-      format: undefined
+      format: undefined  # (d, i) -> String
+
+    # ## Y Axis
     # Control the display of the y-axis.
     # Same parameters as the x-axis.
     yAxis:
       enabled: false
       title: ""
-      format: undefined
-      min: undefined
-      max: undefined
+      format: undefined  # (d, i) -> String
+      min: undefined  # Number
+      max: undefined  # Number
+
+    # ## Legend
     # If you want to display a legend, you need to enable this and
     # also specify a valid DOM element to generate the legend in.
     legend:
       enabled: false
-      element: undefined  # can be a DOM element, jQuery element, or string to the ID
+      elem: undefined  # DOMNode | jQueryNode | String
       reversed: false  # bottom-to-top, or top-to-bottom
-      titleAccessor: undefined  # function that takes (d, i) and returns a string
+      titleAccessor: undefined  # (d, i) -> String
       # Events that can be attached to the legend.
-      # The arguments the handler receives are documented to the right.
-      click: undefined  # (d, i, this)
-      postRender: undefined  # (DOM Node)
-    # Event: If you need to execute something after `render`
+      click: undefined  # (d, i, this) ->
+      postRender: undefined  # (DOMNode) ->
+    # ## Chart Events
+
+    # If you need to execute something after `render`
     postRender: undefined
 
 
-  # ## Helper Util: Data processor
+  # # Helper Utils
+  # TODO needs to be repackage into a utils library.
 
+  # ## Data processor
   # Normalize data so that at position `idx`, the value is 100%
   # and all other values are scaled relative to that value.
-  # TODO needs to be repackage into a utils library.
   exports.normalizeFirst = (data, idx) ->
     data = $.extend(true, [], data)  # make a deep copy of data
     idx = idx || 0
@@ -91,8 +111,8 @@ do ($=jQuery, d3=d3, exports=window) ->
         set_j.y *= factor / max_value * 100
     data;
 
-  # private functions from
-  # https://raw.github.com/mbostock/d3/master/src/layout/stack.js
+  # Private functions copied from
+  # <https://raw.github.com/mbostock/d3/master/src/layout/stack.js>
   # for re-ordering data
   d3_layout_stackReduceSum = (d) -> d.reduce(d3_layout_stackSum, 0)
   d3_layout_stackSum = (p, d) -> p + d[1]
@@ -105,8 +125,8 @@ do ($=jQuery, d3=d3, exports=window) ->
 
   #
   exports.D3Chart = class D3Chart
-    # set up the DOM element the chart is associated with
-    # and then call main
+    # Set up the DOM element the chart is associated with
+    # and then call main.
     constructor: (el, data, options) ->
       if el.jquery
         @elem = el[0]
@@ -132,6 +152,7 @@ do ($=jQuery, d3=d3, exports=window) ->
         @main(data, options)
       return this
 
+    # The main execution path looks like this:
     main: (data, options) ->
       @setUp options
       @_data = @initData data
