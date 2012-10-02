@@ -29,8 +29,12 @@ do ($=jQuery, d3=d3, exports=window) ->
     accessors:
       # How to get bar data from the layer data
       bars: (d) -> d
+      # How to read x-values from the data
+      x: undefined  #  (d) -> d.x  TODO: only partially implemented
+      # How to read y-values from the data
+      y: undefined  #  (d) -> d.y  TODO: only partially implemented
       # If you set a color accessor, your color above should be an Object
-      colors: undefined
+      colors: undefined  # (d, i) -> Color
 
     # Tooltips currently rely on a version bootstrap's tooltips hacked to
     # work with SVG.
@@ -443,7 +447,7 @@ do ($=jQuery, d3=d3, exports=window) ->
       self = this  # need a reference to `this`
       items.on("click", (d, i) ->
         d3.event.preventDefault()
-        self.options.legend.click?(d, i, this)
+        self.options.legend.click?.call(self, d, i, this)
       )
       return this
 
@@ -462,14 +466,13 @@ do ($=jQuery, d3=d3, exports=window) ->
 
     setUp: (options) ->
       super(options)
-      if @options.stackOrder
-        if @options.stackOrder == "big-bottom"
-          @options.stackOrder = (d) ->
-            n = d.length
-            sums = d.map(d3_layout_stackReduceSum)
-            stackOrder = d3.range(n).sort((a, b) -> sums[b] - sums[a])
-            @_stackOrder = stackOrder  # hold onto this order for later
-            return stackOrder
+      if @options.stackOrder == "big-bottom"
+        @options.stackOrder = (d) ->
+          n = d.length
+          sums = d.map(d3_layout_stackReduceSum)
+          stackOrder = d3.range(n).sort((a, b) -> sums[b] - sums[a])
+          @_stackOrder = stackOrder  # hold onto this order for later
+          return stackOrder
       return this
 
     #
@@ -478,6 +481,12 @@ do ($=jQuery, d3=d3, exports=window) ->
       stack = d3.layout.stack()
       if @options.stackOrder
         stack.order(@options.stackOrder)
+        console.log("stackOrder, need to restack?", @_stackOrder)
+      if @options.accessors.x
+        stack.x(@options.accessors.x)
+      if @options.accessors.y
+        stack.y(@options.accessors.y)
+      @_stack = stack
 
       data = stack.values(@_barsDataAccessor)(new_data)
 

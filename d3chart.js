@@ -16,6 +16,8 @@ var __hasProp = {}.hasOwnProperty,
       bars: function(d) {
         return d;
       },
+      x: void 0,
+      y: void 0,
       colors: void 0
     },
     tooltip: {
@@ -356,9 +358,9 @@ var __hasProp = {}.hasOwnProperty,
       }
       self = this;
       items.on("click", function(d, i) {
-        var _base;
+        var _ref;
         d3.event.preventDefault();
-        return typeof (_base = self.options.legend).click === "function" ? _base.click(d, i, this) : void 0;
+        return (_ref = self.options.legend.click) != null ? _ref.call(self, d, i, this) : void 0;
       });
       return this;
     };
@@ -384,19 +386,17 @@ var __hasProp = {}.hasOwnProperty,
 
     D3StackedBarChart.prototype.setUp = function(options) {
       D3StackedBarChart.__super__.setUp.call(this, options);
-      if (this.options.stackOrder) {
-        if (this.options.stackOrder === "big-bottom") {
-          this.options.stackOrder = function(d) {
-            var n, stackOrder, sums;
-            n = d.length;
-            sums = d.map(d3_layout_stackReduceSum);
-            stackOrder = d3.range(n).sort(function(a, b) {
-              return sums[b] - sums[a];
-            });
-            this._stackOrder = stackOrder;
-            return stackOrder;
-          };
-        }
+      if (this.options.stackOrder === "big-bottom") {
+        this.options.stackOrder = function(d) {
+          var n, stackOrder, sums;
+          n = d.length;
+          sums = d.map(d3_layout_stackReduceSum);
+          stackOrder = d3.range(n).sort(function(a, b) {
+            return sums[b] - sums[a];
+          });
+          this._stackOrder = stackOrder;
+          return stackOrder;
+        };
       }
       return this;
     };
@@ -406,7 +406,15 @@ var __hasProp = {}.hasOwnProperty,
       stack = d3.layout.stack();
       if (this.options.stackOrder) {
         stack.order(this.options.stackOrder);
+        console.log("stackOrder, need to restack?", this._stackOrder);
       }
+      if (this.options.accessors.x) {
+        stack.x(this.options.accessors.x);
+      }
+      if (this.options.accessors.y) {
+        stack.y(this.options.accessors.y);
+      }
+      this._stack = stack;
       data = stack.values(this._barsDataAccessor)(new_data);
       if (this._stackOrder) {
         data = this._stackOrder.map(function(x) {
