@@ -171,19 +171,19 @@ do ($=jQuery, d3=d3, exports=window) ->
       defaultOptions.width = @$elem.width()
 
       # Merge user options and default options.
-      @options = $.extend(true, {}, defaultOptions, options || {})
+      @_options = $.extend(true, {}, defaultOptions, options || {})
 
       # Allow an array of hex values for convenience.
-      if $.isArray(@options.colors)
-        @options.colors = d3.scale.ordinal().range(@options.colors)
+      if $.isArray(@_options.colors)
+        @_options.colors = d3.scale.ordinal().range(@_options.colors)
 
       # Pre-calculate plot box dimensions.
-      @options.plotBox =
-        width: @options.width - @options.margin.left - @options.margin.right
-        height: @options.height - @options.margin.top - @options.margin.bottom
+      @_options.plotBox =
+        width: @_options.width - @_options.margin.left - @_options.margin.right
+        height: @_options.height - @_options.margin.top - @_options.margin.bottom
 
       # cache bar data accessor
-      @_barsDataAccessor = @options.accessors.bars
+      @_barsDataAccessor = @_options.accessors.bars
 
       # Indicate the current state by adding the "loading" class to the container.
       @$elem.addClass "loading"
@@ -204,22 +204,22 @@ do ($=jQuery, d3=d3, exports=window) ->
               .append("svg")
               .attr("width", "100%")
               .attr("height", "100%")
-              .attr("viewBox", [0, 0, @options.width, @options.height].join(" "))
+              .attr("viewBox", [0, 0, @_options.width, @_options.height].join(" "))
               .attr("preserveAspectRatio", "xMinYMin meet")
 
       # Setup plot DOM.
       @plot = @svg
                .append("g")
                .attr("class", "plot")
-               .attr("width", @options.plotBox.width)
-               .attr("height", @options.plotBox.height)
-               .attr("transform", "translate(#{@options.margin.left}, #{@options.margin.top})")
+               .attr("width", @_options.plotBox.width)
+               .attr("height", @_options.plotBox.height)
+               .attr("transform", "translate(#{@_options.margin.left}, #{@_options.margin.top})")
 
       @$elem.removeClass('loading')  # use jquery version for convenience
 
     # A postRender event is provided if you need to do anything after the
     # chart has been rendered.
-    postRender: -> @options.postRender?.call(this)
+    postRender: -> @_options.postRender?.call(this)
 
     # ## Methods
 
@@ -234,9 +234,9 @@ do ($=jQuery, d3=d3, exports=window) ->
     # Get or set option.
     option: (name, newvalue) ->
       if newvalue?
-        @options[name] = newvalue;
+        @_options[name] = newvalue;
         return this
-      @options[name]
+      @_options[name]
 
     # Refresh.
     refresh: () -> @  # PASS
@@ -256,7 +256,7 @@ do ($=jQuery, d3=d3, exports=window) ->
       @x = @getX()
 
       # Setup y scales. There is a separate scale for `y` values and `h` height values.
-      plotBox = @options.plotBox
+      plotBox = @_options.plotBox
       @hScale = d3.scale.linear().range([0, plotBox.height])
       @yScale = d3.scale.linear().range([plotBox.height, 0])
       @yAxis = null
@@ -278,7 +278,7 @@ do ($=jQuery, d3=d3, exports=window) ->
       @_layers = @getLayers()
       @getBars()
 
-      if @options.tooltip.enabled and $.fn.tooltip
+      if @_options.tooltip.enabled and $.fn.tooltip
         $('rect.bar', @svg[0]).tooltip({
           # This is wrapped so that you can change the tooltip
           # after the chart has already been initialized.
@@ -286,34 +286,34 @@ do ($=jQuery, d3=d3, exports=window) ->
         })
 
       # Let's draw axes!
-      if @options.xAxis.enabled
+      if @_options.xAxis.enabled
         @xAxis = d3.svg.axis()
           .orient("bottom")
           .scale(@xScale)
           .tickSize(6, 1, 1)
-        if @options.xAxis.format
-          @xAxis.tickFormat(@options.xAxis.format)
+        if @_options.xAxis.format
+          @xAxis.tickFormat(@_options.xAxis.format)
         @svg.append("g")
           .attr("class", "x axis")
-          .attr("title", @options.xAxis.title)  # TODO render this title
-          .attr("transform", "translate(#{@options.margin.left}, #{(@options.height - @options.margin.bottom)})")
+          .attr("title", @_options.xAxis.title)  # TODO render this title
+          .attr("transform", "translate(#{@_options.margin.left}, #{(@_options.height - @_options.margin.bottom)})")
           .call(@xAxis)
 
-      if @options.yAxis.enabled
+      if @_options.yAxis.enabled
         @yAxis = d3.svg.axis()
            .scale(self.yScale)
            .orient("left")
-        if @options.yAxis.format
-          @yAxis.tickFormat(@options.yAxis.format)
+        if @_options.yAxis.format
+          @yAxis.tickFormat(@_options.yAxis.format)
         @svg.append("g")
           .attr("class", "y axis")
-          .attr("title", @options.yAxis.title)  # TODO render this title
-          .attr("transform", "translate(#{@options.margin.left}, #{@options.margin.top})")
+          .attr("title", @_options.yAxis.title)  # TODO render this title
+          .attr("transform", "translate(#{@_options.margin.left}, #{@_options.margin.top})")
           .call(@yAxis)
 
-      if @options.legend.enabled
-        @renderLegend(@options.legend.elem)
-        @postRenderLegend(@options.legend.elem)
+      if @_options.legend.enabled
+        @renderLegend(@_options.legend.elem)
+        @postRenderLegend(@_options.legend.elem)
 
     # ## Refresh
     # This is a stripped down version of `render()` that only re-draws.
@@ -344,7 +344,7 @@ do ($=jQuery, d3=d3, exports=window) ->
       max_x = d3.max(d, (d) -> d3.max(d, (d) -> d.x))
       return d3.scale.ordinal()
           .domain(d3.range(min_x, max_x + 1))
-          .rangeRoundBands([0, @options.plotBox.width], 0.1, 0.1)
+          .rangeRoundBands([0, @_options.plotBox.width], 0.1, 0.1)
 
     # Figure out the y extents of the data. We're assuming we start at 0,
     # so there's no need to a @getMinY. If you don't want an automatic
@@ -356,8 +356,8 @@ do ($=jQuery, d3=d3, exports=window) ->
     #
     #     getMaxY: () -> 10000
     getYDomain: ->
-      min = if @options.yAxis.min? then @options.yAxis.min else 0
-      max = if @options.yAxis.max? then @options.yAxis.max else @getMaxY(@_data)
+      min = if @_options.yAxis.min? then @_options.yAxis.min else 0
+      max = if @_options.yAxis.max? then @_options.yAxis.max else @getMaxY(@_data)
       [min, max]
 
     # Function for how to find the the largest value for `y` in the data.
@@ -367,7 +367,7 @@ do ($=jQuery, d3=d3, exports=window) ->
 
     # Return a function that decides how to color the bars based on the layer.
     getLayerFillStyle: ->
-      opts = @options
+      opts = @_options
       if opts.accessors.colors?
         return (d, i) -> opts.colors[opts.accessors.colors(d, i)]
       return (d, i) -> opts.colors(i)
@@ -412,7 +412,7 @@ do ($=jQuery, d3=d3, exports=window) ->
           .attr("class", "bar")
           .attr("width", @bar_width * 0.9)
           .attr("x", @x)
-          .attr("y", @options.plotBox.height)  # start bars at the bottom
+          .attr("y", @_options.plotBox.height)  # start bars at the bottom
           .attr("height", 0)  # start bars with no height so they grow to their final height
           .transition()
             .delay((d, i) -> i * 10)
@@ -422,7 +422,7 @@ do ($=jQuery, d3=d3, exports=window) ->
     # Bar_width is an outer width, so it's actually more like bar space.
     getBarWidth: () ->
       len_x = @xScale.range().length;
-      @options.plotBox.width / len_x;
+      @_options.plotBox.width / len_x;
 
 
     # ## Legend
@@ -444,7 +444,7 @@ do ($=jQuery, d3=d3, exports=window) ->
       #
       # * [d3.insert ref](https://github.com/mbostock/d3/wiki/Selections#wiki-insert)
       # * [dom insertBefore's null convention](http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#ID-952280727)
-      legendStackOrder = if @options.legend.reversed then ":first-child" else null
+      legendStackOrder = if @_options.legend.reversed then ":first-child" else null
 
       items = d3.select(@legend).append("ul")
         .attr("class", "nav nav-pills nav-stacked")
@@ -457,10 +457,10 @@ do ($=jQuery, d3=d3, exports=window) ->
       items
         .append("span").attr("class", "legend-key")
         .html("&#9608;").style("color", @layerFillStyle)  # TODO use an element that can be controlled with CSS better but is also printable
-      if @options.legend.titleAccessor?
+      if @_options.legend.titleAccessor?
         items
           .append("span").attr("class", "legend-value")
-          .text(@options.legend.titleAccessor)
+          .text(@_options.legend.titleAccessor)
       else
         items
           .append("span").attr("class", "legend-value")
@@ -468,14 +468,14 @@ do ($=jQuery, d3=d3, exports=window) ->
       self = this  # need a reference to `this`
       items.on("click", (d, i) ->
         d3.event.preventDefault()
-        self.options.legend.click?.call(self, d, i, this)
+        self._options.legend.click?.call(self, d, i, this)
       )
       return this
 
     # If you want to customize the legend, it may be easier to alter the legend
     # created by `renderLegend` instead of making your own.
     postRenderLegend: (el) ->
-      @options.legend.postRender?.call(this, el);
+      @_options.legend.postRender?.call(this, el);
       return this
 
   #
@@ -488,8 +488,8 @@ do ($=jQuery, d3=d3, exports=window) ->
     setUp: (options) ->
       super(options)
       self = this
-      if @options.stackOrder == "big-bottom"
-        @options.stackOrder = (d) ->
+      if @_options.stackOrder == "big-bottom"
+        @_options.stackOrder = (d) ->
           n = d.length
           sums = d.map(d3_layout_stackReduceSum)
           stackOrder = d3.range(n).sort((a, b) -> sums[b] - sums[a])
@@ -501,12 +501,12 @@ do ($=jQuery, d3=d3, exports=window) ->
     initData: (new_data) ->
       # Process add stack offsets using d3's layout helper.
       stack = d3.layout.stack()
-      if @options.stackOrder
-        stack.order(@options.stackOrder)
-      if @options.accessors.x
-        stack.x(@options.accessors.x)
-      if @options.accessors.y
-        stack.y(@options.accessors.y)
+      if @_options.stackOrder
+        stack.order(@_options.stackOrder)
+      if @_options.accessors.x
+        stack.x(@_options.accessors.x)
+      if @_options.accessors.y
+        stack.y(@_options.accessors.y)
       @_stack = stack
 
       data = stack.values(@_barsDataAccessor)(new_data)
@@ -582,10 +582,10 @@ do ($=jQuery, d3=d3, exports=window) ->
       bar_width = super()
 
       @_barSpacing = @_staggerMode = 0
-      if typeof @options.barSpacing == "string"  # percent "5%"
-        @_barSpacing = bar_width * parseFloat(@options.barSpacing) / 100;
-      else if @options.barSpacing
-        @_barSpacing = @options.barSpacing
+      if typeof @_options.barSpacing == "string"  # percent "5%"
+        @_barSpacing = bar_width * parseFloat(@_options.barSpacing) / 100;
+      else if @_options.barSpacing
+        @_barSpacing = @_options.barSpacing
       # If `barSpacing` is negative, reverse the direction of the stagger.
       if @_barSpacing < 0
         @_barSpacing = -@_barSpacing

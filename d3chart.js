@@ -118,15 +118,15 @@ var __hasProp = {}.hasOwnProperty,
     D3Chart.prototype.setUp = function(options) {
       defaultOptions.height = this.$elem.height();
       defaultOptions.width = this.$elem.width();
-      this.options = $.extend(true, {}, defaultOptions, options || {});
-      if ($.isArray(this.options.colors)) {
-        this.options.colors = d3.scale.ordinal().range(this.options.colors);
+      this._options = $.extend(true, {}, defaultOptions, options || {});
+      if ($.isArray(this._options.colors)) {
+        this._options.colors = d3.scale.ordinal().range(this._options.colors);
       }
-      this.options.plotBox = {
-        width: this.options.width - this.options.margin.left - this.options.margin.right,
-        height: this.options.height - this.options.margin.top - this.options.margin.bottom
+      this._options.plotBox = {
+        width: this._options.width - this._options.margin.left - this._options.margin.right,
+        height: this._options.height - this._options.margin.top - this._options.margin.bottom
       };
-      this._barsDataAccessor = this.options.accessors.bars;
+      this._barsDataAccessor = this._options.accessors.bars;
       return this.$elem.addClass("loading");
     };
 
@@ -139,14 +139,14 @@ var __hasProp = {}.hasOwnProperty,
     };
 
     D3Chart.prototype.render = function() {
-      this.svg = d3.select(this.elem).append("svg").attr("width", "100%").attr("height", "100%").attr("viewBox", [0, 0, this.options.width, this.options.height].join(" ")).attr("preserveAspectRatio", "xMinYMin meet");
-      this.plot = this.svg.append("g").attr("class", "plot").attr("width", this.options.plotBox.width).attr("height", this.options.plotBox.height).attr("transform", "translate(" + this.options.margin.left + ", " + this.options.margin.top + ")");
+      this.svg = d3.select(this.elem).append("svg").attr("width", "100%").attr("height", "100%").attr("viewBox", [0, 0, this._options.width, this._options.height].join(" ")).attr("preserveAspectRatio", "xMinYMin meet");
+      this.plot = this.svg.append("g").attr("class", "plot").attr("width", this._options.plotBox.width).attr("height", this._options.plotBox.height).attr("transform", "translate(" + this._options.margin.left + ", " + this._options.margin.top + ")");
       return this.$elem.removeClass('loading');
     };
 
     D3Chart.prototype.postRender = function() {
       var _ref;
-      return (_ref = this.options.postRender) != null ? _ref.call(this) : void 0;
+      return (_ref = this._options.postRender) != null ? _ref.call(this) : void 0;
     };
 
     D3Chart.prototype.data = function(new_data) {
@@ -160,10 +160,10 @@ var __hasProp = {}.hasOwnProperty,
 
     D3Chart.prototype.option = function(name, newvalue) {
       if (newvalue != null) {
-        this.options[name] = newvalue;
+        this._options[name] = newvalue;
         return this;
       }
-      return this.options[name];
+      return this._options[name];
     };
 
     D3Chart.prototype.refresh = function() {
@@ -187,7 +187,7 @@ var __hasProp = {}.hasOwnProperty,
       this.xScale = this.getXScale();
       this.XAxis = null;
       this.x = this.getX();
-      plotBox = this.options.plotBox;
+      plotBox = this._options.plotBox;
       this.hScale = d3.scale.linear().range([0, plotBox.height]);
       this.yScale = d3.scale.linear().range([plotBox.height, 0]);
       this.yAxis = null;
@@ -203,30 +203,30 @@ var __hasProp = {}.hasOwnProperty,
       this.rescale(this.getYDomain());
       this._layers = this.getLayers();
       this.getBars();
-      if (this.options.tooltip.enabled && $.fn.tooltip) {
+      if (this._options.tooltip.enabled && $.fn.tooltip) {
         $('rect.bar', this.svg[0]).tooltip({
           title: function() {
             return self.options.tooltip.format.call(this);
           }
         });
       }
-      if (this.options.xAxis.enabled) {
+      if (this._options.xAxis.enabled) {
         this.xAxis = d3.svg.axis().orient("bottom").scale(this.xScale).tickSize(6, 1, 1);
-        if (this.options.xAxis.format) {
-          this.xAxis.tickFormat(this.options.xAxis.format);
+        if (this._options.xAxis.format) {
+          this.xAxis.tickFormat(this._options.xAxis.format);
         }
-        this.svg.append("g").attr("class", "x axis").attr("title", this.options.xAxis.title).attr("transform", "translate(" + this.options.margin.left + ", " + (this.options.height - this.options.margin.bottom) + ")").call(this.xAxis);
+        this.svg.append("g").attr("class", "x axis").attr("title", this._options.xAxis.title).attr("transform", "translate(" + this._options.margin.left + ", " + (this._options.height - this._options.margin.bottom) + ")").call(this.xAxis);
       }
-      if (this.options.yAxis.enabled) {
+      if (this._options.yAxis.enabled) {
         this.yAxis = d3.svg.axis().scale(self.yScale).orient("left");
-        if (this.options.yAxis.format) {
-          this.yAxis.tickFormat(this.options.yAxis.format);
+        if (this._options.yAxis.format) {
+          this.yAxis.tickFormat(this._options.yAxis.format);
         }
-        this.svg.append("g").attr("class", "y axis").attr("title", this.options.yAxis.title).attr("transform", "translate(" + this.options.margin.left + ", " + this.options.margin.top + ")").call(this.yAxis);
+        this.svg.append("g").attr("class", "y axis").attr("title", this._options.yAxis.title).attr("transform", "translate(" + this._options.margin.left + ", " + this._options.margin.top + ")").call(this.yAxis);
       }
-      if (this.options.legend.enabled) {
-        this.renderLegend(this.options.legend.elem);
-        return this.postRenderLegend(this.options.legend.elem);
+      if (this._options.legend.enabled) {
+        this.renderLegend(this._options.legend.elem);
+        return this.postRenderLegend(this._options.legend.elem);
       }
     };
 
@@ -255,13 +255,13 @@ var __hasProp = {}.hasOwnProperty,
           return d.x;
         });
       });
-      return d3.scale.ordinal().domain(d3.range(min_x, max_x + 1)).rangeRoundBands([0, this.options.plotBox.width], 0.1, 0.1);
+      return d3.scale.ordinal().domain(d3.range(min_x, max_x + 1)).rangeRoundBands([0, this._options.plotBox.width], 0.1, 0.1);
     };
 
     D3BarChart.prototype.getYDomain = function() {
       var max, min;
-      min = this.options.yAxis.min != null ? this.options.yAxis.min : 0;
-      max = this.options.yAxis.max != null ? this.options.yAxis.max : this.getMaxY(this._data);
+      min = this._options.yAxis.min != null ? this._options.yAxis.min : 0;
+      max = this._options.yAxis.max != null ? this._options.yAxis.max : this.getMaxY(this._data);
       return [min, max];
     };
 
@@ -277,7 +277,7 @@ var __hasProp = {}.hasOwnProperty,
 
     D3BarChart.prototype.getLayerFillStyle = function() {
       var opts;
-      opts = this.options;
+      opts = this._options;
       if (opts.accessors.colors != null) {
         return function(d, i) {
           return opts.colors[opts.accessors.colors(d, i)];
@@ -323,7 +323,7 @@ var __hasProp = {}.hasOwnProperty,
     };
 
     D3BarChart.prototype.getBars = function() {
-      return this._layers.selectAll("rect.bar").data(this._barsDataAccessor).enter().append("rect").attr("class", "bar").attr("width", this.bar_width * 0.9).attr("x", this.x).attr("y", this.options.plotBox.height).attr("height", 0).transition().delay(function(d, i) {
+      return this._layers.selectAll("rect.bar").data(this._barsDataAccessor).enter().append("rect").attr("class", "bar").attr("width", this.bar_width * 0.9).attr("x", this.x).attr("y", this._options.plotBox.height).attr("height", 0).transition().delay(function(d, i) {
         return i * 10;
       }).attr("y", this.y).attr("height", this.h);
     };
@@ -331,7 +331,7 @@ var __hasProp = {}.hasOwnProperty,
     D3BarChart.prototype.getBarWidth = function() {
       var len_x;
       len_x = this.xScale.range().length;
-      return this.options.plotBox.width / len_x;
+      return this._options.plotBox.width / len_x;
     };
 
     D3BarChart.prototype.getLegendSeriesTitle = function(d, i) {
@@ -348,11 +348,11 @@ var __hasProp = {}.hasOwnProperty,
       } else {
         this.legend = el;
       }
-      legendStackOrder = this.options.legend.reversed ? ":first-child" : null;
+      legendStackOrder = this._options.legend.reversed ? ":first-child" : null;
       items = d3.select(this.legend).append("ul").attr("class", "nav nav-pills nav-stacked").selectAll("li").data(this._data).enter().insert("li", legendStackOrder).attr('class', 'inactive').append('a').attr("href", "#");
       items.append("span").attr("class", "legend-key").html("&#9608;").style("color", this.layerFillStyle);
-      if (this.options.legend.titleAccessor != null) {
-        items.append("span").attr("class", "legend-value").text(this.options.legend.titleAccessor);
+      if (this._options.legend.titleAccessor != null) {
+        items.append("span").attr("class", "legend-value").text(this._options.legend.titleAccessor);
       } else {
         items.append("span").attr("class", "legend-value").text(this.getLegendSeriesTitle);
       }
@@ -360,14 +360,14 @@ var __hasProp = {}.hasOwnProperty,
       items.on("click", function(d, i) {
         var _ref;
         d3.event.preventDefault();
-        return (_ref = self.options.legend.click) != null ? _ref.call(self, d, i, this) : void 0;
+        return (_ref = self._options.legend.click) != null ? _ref.call(self, d, i, this) : void 0;
       });
       return this;
     };
 
     D3BarChart.prototype.postRenderLegend = function(el) {
       var _ref;
-      if ((_ref = this.options.legend.postRender) != null) {
+      if ((_ref = this._options.legend.postRender) != null) {
         _ref.call(this, el);
       }
       return this;
@@ -388,8 +388,8 @@ var __hasProp = {}.hasOwnProperty,
       var self;
       D3StackedBarChart.__super__.setUp.call(this, options);
       self = this;
-      if (this.options.stackOrder === "big-bottom") {
-        this.options.stackOrder = function(d) {
+      if (this._options.stackOrder === "big-bottom") {
+        this._options.stackOrder = function(d) {
           var n, stackOrder, sums;
           n = d.length;
           sums = d.map(d3_layout_stackReduceSum);
@@ -406,14 +406,14 @@ var __hasProp = {}.hasOwnProperty,
     D3StackedBarChart.prototype.initData = function(new_data) {
       var data, stack;
       stack = d3.layout.stack();
-      if (this.options.stackOrder) {
-        stack.order(this.options.stackOrder);
+      if (this._options.stackOrder) {
+        stack.order(this._options.stackOrder);
       }
-      if (this.options.accessors.x) {
-        stack.x(this.options.accessors.x);
+      if (this._options.accessors.x) {
+        stack.x(this._options.accessors.x);
       }
-      if (this.options.accessors.y) {
-        stack.y(this.options.accessors.y);
+      if (this._options.accessors.y) {
+        stack.y(this._options.accessors.y);
       }
       this._stack = stack;
       data = stack.values(this._barsDataAccessor)(new_data);
@@ -505,10 +505,10 @@ var __hasProp = {}.hasOwnProperty,
       var bar_width;
       bar_width = D3StaggeredBarChart.__super__.getBarWidth.call(this);
       this._barSpacing = this._staggerMode = 0;
-      if (typeof this.options.barSpacing === "string") {
-        this._barSpacing = bar_width * parseFloat(this.options.barSpacing) / 100;
-      } else if (this.options.barSpacing) {
-        this._barSpacing = this.options.barSpacing;
+      if (typeof this._options.barSpacing === "string") {
+        this._barSpacing = bar_width * parseFloat(this._options.barSpacing) / 100;
+      } else if (this._options.barSpacing) {
+        this._barSpacing = this._options.barSpacing;
       }
       if (this._barSpacing < 0) {
         this._barSpacing = -this._barSpacing;
