@@ -1,21 +1,3 @@
-var MyBarChart = (function() {
-
-    __extends(Custom, D3StackedBarChart);
-
-    function Custom() {
-      return Custom.__super__.constructor.apply(this, arguments);
-    }
-    Custom.prototype.getLayerFillStyle = function() {
-      var self = this;
-      return function(d, i) {
-        return self.options.color[d.name];
-      };
-    };
-
-    return Custom;
-
-  })();
-
 
 var data = [
       {
@@ -44,10 +26,11 @@ var options = {
         "Lunch": 'darkslategrey'
       },
       accessors: {
-        bars: function(d){ return d.values; }
+        bars: function(d){ return d.values; },
+        colors: function(d){ return d.name; }
       },
       xAxis: { enabled: true },
       yAxis: { enabled: true }
     };
 
-var mychart = new MyBarChart("chart", data, options);
+var mychart = new D3StackedBarChart("chart", data, options);

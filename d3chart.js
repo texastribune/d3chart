@@ -15,7 +15,8 @@ var __hasProp = {}.hasOwnProperty,
     accessors: {
       bars: function(d) {
         return d;
-      }
+      },
+      colors: void 0
     },
     tooltip: {
       enabled: false,
@@ -273,10 +274,15 @@ var __hasProp = {}.hasOwnProperty,
     };
 
     D3BarChart.prototype.getLayerFillStyle = function() {
-      var self;
-      self = this;
+      var opts;
+      opts = this.options;
+      if (opts.accessors.colors != null) {
+        return function(d, i) {
+          return opts.color[opts.accessors.colors(d, i)];
+        };
+      }
       return function(d, i) {
-        return self.options.color(i);
+        return opts.color(i);
       };
     };
 

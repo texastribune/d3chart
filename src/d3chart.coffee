@@ -29,6 +29,8 @@ do ($=jQuery, d3=d3, exports=window) ->
     accessors:
       # How to get bar data from the layer data
       bars: (d) -> d
+      # If you set a color accessor, your color above should be an Object
+      colors: undefined
 
     # Tooltips currently rely on a version bootstrap's tooltips hacked to
     # work with SVG.
@@ -339,9 +341,11 @@ do ($=jQuery, d3=d3, exports=window) ->
       d3.max(_d, (d) -> d3.max(d, (d) -> d.y))
 
     # Return a function that decides how to color the bars based on the layer.
-    getLayerFillStyle: () ->
-      self = this
-      return (d, i) -> return self.options.color(i)
+    getLayerFillStyle: ->
+      opts = @options
+      if opts.accessors.colors?
+        return (d, i) -> opts.color[opts.accessors.colors(d, i)]
+      return (d, i) -> opts.color(i)
 
     # How to get the attribute of the data element into `xScale`.
     getX: () ->

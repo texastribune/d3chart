@@ -195,6 +195,51 @@
     return equal(testChart.yScale.domain()[1], options.yAxis.max);
   });
 
+  test("fill color can be obtained via an accesor", function() {
+    var data, options, testChart;
+    data = [
+      {
+        values: [
+          {
+            x: 0,
+            y: 1
+          }, {
+            x: 1,
+            y: 2000
+          }
+        ],
+        name: "foo"
+      }, {
+        values: [
+          {
+            x: 0,
+            y: 100
+          }, {
+            x: 1,
+            y: 20000
+          }
+        ],
+        name: "bar"
+      }
+    ];
+    options = {
+      color: {
+        foo: "#ff0000",
+        bar: "#00ff00"
+      },
+      accessors: {
+        bars: function(d) {
+          return d.values;
+        },
+        colors: function(d) {
+          return d.name;
+        }
+      }
+    };
+    testChart = new D3BarChart(FIXTURE, data, options);
+    return equal(testChart.plot.select('g.layer').style('fill'), options.color[data[0].name]);
+  });
+
   $legend = null;
 
   DATA = [[]];
