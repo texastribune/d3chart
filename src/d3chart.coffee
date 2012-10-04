@@ -1,3 +1,11 @@
+###
+D3Chart
+
+Version: 0.0.1
+
+Homepage: https://github.com/texastribune/d3chart
+###
+#
 # Homepage:
 # [github.com/texastribune/d3chart](https://github.com/texastribune/d3chart)
 #
