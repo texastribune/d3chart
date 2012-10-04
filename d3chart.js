@@ -373,6 +373,22 @@ var __hasProp = {}.hasOwnProperty,
       return this;
     };
 
+    D3BarChart.prototype.addDemarcationY = function(a, text) {
+      var demarcation, extent, options, scaledA;
+      extent = d3.extent(this.xScale.domain());
+      scaledA = this.xScale(a);
+      if (a < extent[0] || a > extent[1]) {
+        return false;
+      }
+      options = this._options;
+      demarcation = this.plot.append('g').attr('class', 'demarcation').attr("transform", "translate(" + (-this.bar_width / 10 / 2) + ", 0)");
+      demarcation.append("line").attr('x1', scaledA).attr('x2', scaledA).attr('y1', -options.margin.bottom).attr('y2', options.height - options.margin.top - options.margin.bottom).attr('stroke-width', 2);
+      if (text) {
+        demarcation.append("text").attr('class', 'demarcation-label').attr('x', this.xScale(a) + 5).attr('y', -options.margin.top + 10).text(text).attr('stroke-width', 0).style('font-family', 'sans-serif').style('font-size', '12px');
+      }
+      return demarcation;
+    };
+
     return D3BarChart;
 
   })(D3Chart);

@@ -84,7 +84,7 @@ do ($=jQuery, d3=d3, exports=window) ->
     legend:
       enabled: false
       elem: undefined  # DOMNode | jQueryNode | String
-      reversed: false  # bottom-to-top, or top-to-bottom
+      reversed: false  # bottom-to-top, or top-to-bottom  # TODO should this be like stackOrder? cache stackOrder when it's run and re-apply it
       titleAccessor: undefined  # (d, i) -> String
       # Events that can be attached to the legend.
       click: undefined  # (d, i, this) ->
@@ -477,6 +477,38 @@ do ($=jQuery, d3=d3, exports=window) ->
     postRenderLegend: (el) ->
       @_options.legend.postRender?.call(this, el);
       return this
+
+    # Add an annotation. `a` is a value in the x domain.
+    #   `text` is the optional annotation text for the demarcation line.
+    addDemarcationY: (a, text) ->
+      extent = d3.extent(@xScale.domain())
+      scaledA = @xScale(a)
+      if (a < extent[0] || a > extent[1])
+        return false
+
+      options = @_options  # cache object lookup
+      demarcation = @plot.append('g')
+        .attr('class', 'demarcation')
+        .attr("transform", "translate(#{(-@bar_width / 10 / 2)}, 0)");
+      demarcation.append("line")
+          .attr('x1', scaledA)
+          .attr('x2', scaledA)
+          .attr('y1', -options.margin.bottom)
+          .attr('y2', options.height - options.margin.top - options.margin.bottom)
+          .attr('stroke-width', 2)
+      if text
+        demarcation.append("text")
+          .attr('class', 'demarcation-label')
+            .attr('x', @xScale(a) + 5)
+            .attr('y', -options.margin.top + 10)
+            .text(text)
+            .attr('stroke-width', 0)
+            .style('font-family', 'sans-serif')
+            .style('font-size', '12px')
+      return demarcation
+
+
+
 
   #
   # # Stacked Bar Chart
